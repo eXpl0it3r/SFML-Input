@@ -51,6 +51,17 @@ int main()
             }
         }
 
+        for (auto i = 0; i < sf::Keyboard::ScanCodeCount; ++i)
+        {
+            if (sf::Keyboard::isKeyPressed(static_cast<sf::Keyboard::Scancode>(i)))
+            {
+                std::cout << "IsKeyPressed\n";
+                std::cout << "Enum Value:\t" << i << '\n';
+                std::cout << "Description:\t" << sf::Keyboard::getDescription(static_cast<sf::Keyboard::Scancode>(i)).toAnsiString() << '\n';
+                std::cout << '\n';
+            }
+        }
+
         window.clear();
         window.display();
     }

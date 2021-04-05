@@ -17,3 +17,6 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "
 endif()
 
 target_link_libraries(SFML-Input sfml-graphics)
+
+install(TARGETS SFML-Input DESTINATION .)
+install(FILES "Tuffy.ttf" DESTINATION .)

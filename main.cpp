@@ -6,7 +6,7 @@ int main()
     auto window = sf::RenderWindow{ {1024, 720}, "SFML Input Test" };
     window.setFramerateLimit(15);
 
-    for (auto i = 0; i < sf::Keyboard::ScanCodeCount; ++i)
+    for (auto i = 0; i < sf::Keyboard::ScancodeCount; ++i)
     {
         std::cout << i << ":\t" << sf::Keyboard::getDescription(static_cast<sf::Keyboard::Scancode>(i)).toAnsiString() << '\n';
     }
@@ -25,7 +25,7 @@ int main()
     keyReleasedText.setPosition({ 250.f, 0.f });
     auto keyPressedCheckText = sf::Text{ "IsKeyPressed sf::Keyboard::Key\n", font, 13u };
     keyPressedCheckText.setPosition({ 500.f, 0.f });
-    auto keyPressedScancodeCheckText = sf::Text{ "IsKeyPressed sf::Keyboard::ScanCode\n", font, 13u };
+    auto keyPressedScancodeCheckText = sf::Text{ "IsKeyPressed sf::Keyboard::Scancode\n", font, 13u };
     keyPressedScancodeCheckText.setPosition({ 750.f, 0.f });
 
     auto mouseButtonPressedText = sf::Text{ "Mouse Button Pressed\n", font, 13u };
@@ -54,8 +54,8 @@ int main()
                 text.insert(text.getSize(), sf::Keyboard::getDescription(event.key.scancode));
                 text.insert(text.getSize(), "\nLocalized:\t");
                 text.insert(text.getSize(), std::to_string(sf::Keyboard::localize(event.key.scancode)));
-                text.insert(text.getSize(), "\nUnlocalized:\t");
-                text.insert(text.getSize(), std::to_string(sf::Keyboard::unlocalize(event.key.code)));
+                text.insert(text.getSize(), "\nDelocalized:\t");
+                text.insert(text.getSize(), std::to_string(sf::Keyboard::delocalize(event.key.code)));
                 text.insert(text.getSize(), "\n\n");
 
                 keyPressedText.setString(text);
@@ -72,8 +72,8 @@ int main()
                 text.insert(text.getSize(), sf::Keyboard::getDescription(event.key.scancode));
                 text.insert(text.getSize(), "\nLocalized:\t");
                 text.insert(text.getSize(), std::to_string(sf::Keyboard::localize(event.key.scancode)));
-                text.insert(text.getSize(), "\nUnlocalized:\t");
-                text.insert(text.getSize(), std::to_string(sf::Keyboard::unlocalize(event.key.code)));
+                text.insert(text.getSize(), "\nDelocalized:\t");
+                text.insert(text.getSize(), std::to_string(sf::Keyboard::delocalize(event.key.code)));
                 text.insert(text.getSize(), "\n\n");
 
                 keyReleasedText.setString(text);
@@ -108,8 +108,8 @@ int main()
                 auto text = sf::String{ "IsKeyPressed sf::Keyboard::Key" };
                 text.insert(text.getSize(), "\nCode:\t");
                 text.insert(text.getSize(), std::to_string(i));
-                text.insert(text.getSize(), "\nUnlocalized:\t");
-                text.insert(text.getSize(), std::to_string(sf::Keyboard::unlocalize(static_cast<sf::Keyboard::Key>(i))));
+                text.insert(text.getSize(), "\nDelocalized:\t");
+                text.insert(text.getSize(), std::to_string(sf::Keyboard::delocalize(static_cast<sf::Keyboard::Key>(i))));
                 text.insert(text.getSize(), "\n\n");
 
                 keyPressedCheckText.setString(text);
@@ -117,11 +117,11 @@ int main()
             }
         }
 
-        for (auto i = 0; i < sf::Keyboard::ScanCodeCount; ++i)
+        for (auto i = 0; i < sf::Keyboard::ScancodeCount; ++i)
         {
-            if (sf::Keyboard::isKeyPressed(static_cast<sf::Keyboard::Scancode>(i)))
+            if (sf::Keyboard::isKeyPressed(static_cast<sf::Keyboard::Scancode>(ei)))
             {
-                auto text = sf::String{ "IsKeyPressed sf::Keyboard::ScanCode" };
+                auto text = sf::String{ "IsKeyPressed sf::Keyboard::Scancode" };
                 text.insert(text.getSize(), "\nScanCode:\t");
                 text.insert(text.getSize(), std::to_string(i));
                 text.insert(text.getSize(), "\nDescription:\t");

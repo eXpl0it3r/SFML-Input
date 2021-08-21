@@ -119,7 +119,7 @@ int main()
 
         for (auto i = 0; i < sf::Keyboard::ScancodeCount; ++i)
         {
-            if (sf::Keyboard::isKeyPressed(static_cast<sf::Keyboard::Scancode>(ei)))
+            if (sf::Keyboard::isKeyPressed(static_cast<sf::Keyboard::Scancode>(i)))
             {
                 auto text = sf::String{ "IsKeyPressed sf::Keyboard::Scancode" };
                 text.insert(text.getSize(), "\nScanCode:\t");

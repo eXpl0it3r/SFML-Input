@@ -2,53 +2,10 @@
 #include <iostream>
 #include <SFML/Graphics.hpp>
 
-sf::String keyEventDescription(sf::String text, const sf::Event::KeyEvent& keyEvent)
-{
-    text += "\n\nCode:\t\t";
-    text += std::to_string(keyEvent.code);
-    text += "\nScanCode:\t";
-    text += std::to_string(keyEvent.scancode);
-    text += "\nDescription:\t";
-    text += sf::Keyboard::getDescription(keyEvent.scancode);
-    text += "\nLocalized:\t";
-    text += std::to_string(sf::Keyboard::localize(keyEvent.scancode));
-    text += "\nDelocalized:\t";
-    text += std::to_string(sf::Keyboard::delocalize(keyEvent.code));
-    text += "\n\n";
-
-    return text;
-}
-
-sf::String buttonDescription(sf::String text, sf::Mouse::Button button)
-{
-    text += "\n\nButton:\t";
-    text += std::to_string(button);
-    text += "\n\n";
-
-    return text;
-}
-
-sf::String keyDescription(sf::Keyboard::Key code, bool keyPressed)
-{
-    sf::String text = std::to_string(code) + " / ";
-    text += sf::Keyboard::getDescription(sf::Keyboard::delocalize(code)) + " / ";
-    text += std::to_string(sf::Keyboard::delocalize(code)) + " / ";
-    text += keyPressed ? "Y" : "N";
-    text += "\n";
-
-    return text;
-}
-
-sf::String scancodeDescription(sf::Keyboard::Scancode scancode, bool scancodeKeyPressed)
-{
-    sf::String text = std::to_string(scancode) + " / ";
-    text += sf::Keyboard::getDescription(scancode) + " / ";
-    text += std::to_string(sf::Keyboard::localize(scancode)) + " / ";
-    text += scancodeKeyPressed ? "Y" : "N";
-    text += "\n";
-
-    return text;
-}
+sf::String keyEventDescription(sf::String init, const sf::Event::KeyEvent& keyEvent);
+sf::String buttonDescription(sf::String init, sf::Mouse::Button button);
+sf::String keyDescription(sf::Keyboard::Key code, bool keyPressed);
+sf::String scancodeDescription(sf::Keyboard::Scancode scancode, bool scancodeKeyPressed);
 
 int main()
 {
@@ -208,4 +165,52 @@ int main()
 
         window.display();
     }
+}
+
+sf::String keyEventDescription(sf::String text, const sf::Event::KeyEvent& keyEvent)
+{
+    text += "\n\nCode:\t\t";
+    text += std::to_string(keyEvent.code);
+    text += "\nScanCode:\t";
+    text += std::to_string(keyEvent.scancode);
+    text += "\nDescription:\t";
+    text += sf::Keyboard::getDescription(keyEvent.scancode);
+    text += "\nLocalized:\t";
+    text += std::to_string(sf::Keyboard::localize(keyEvent.scancode));
+    text += "\nDelocalized:\t";
+    text += std::to_string(sf::Keyboard::delocalize(keyEvent.code));
+    text += "\n\n";
+
+    return text;
+}
+
+sf::String buttonDescription(sf::String text, sf::Mouse::Button button)
+{
+    text += "\n\nButton:\t";
+    text += std::to_string(button);
+    text += "\n\n";
+
+    return text;
+}
+
+sf::String keyDescription(sf::Keyboard::Key code, bool keyPressed)
+{
+    sf::String text = std::to_string(code) + " / ";
+    text += sf::Keyboard::getDescription(sf::Keyboard::delocalize(code)) + " / ";
+    text += std::to_string(sf::Keyboard::delocalize(code)) + " / ";
+    text += keyPressed ? "Y" : "N";
+    text += "\n";
+
+    return text;
+}
+
+sf::String scancodeDescription(sf::Keyboard::Scancode scancode, bool scancodeKeyPressed)
+{
+    sf::String text = std::to_string(scancode) + " / ";
+    text += sf::Keyboard::getDescription(scancode) + " / ";
+    text += std::to_string(sf::Keyboard::localize(scancode)) + " / ";
+    text += scancodeKeyPressed ? "Y" : "N";
+    text += "\n";
+
+    return text;
 }

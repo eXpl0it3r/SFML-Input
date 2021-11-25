@@ -27,17 +27,16 @@ int main()
     auto keyReleasedText = sf::Text{ "Key Released\n", font, textSize };
     keyReleasedText.setPosition({ 260.f, 0.f });
 
-    auto keyPressedCheckText1 = sf::Text{ "IsKeyPressed sf::Keyboard::Key\n", font, textSize };
-    keyPressedCheckText1.setPosition({ 520.f, 0.f });
-    auto keyPressedCheckText2 = sf::Text{ "IsKeyPressed sf::Keyboard::Key\n", font, textSize };
-    keyPressedCheckText2.setPosition({ 780.f, 0.f });
+    auto keyPressedCheckText = std::array<sf::Text, 2>{};
+    keyPressedCheckText.fill(sf::Text{ "IsKeyPressed sf::Keyboard::Key\n", font, textSize });
+    keyPressedCheckText[0].setPosition({ 520.f, 0.f });
+    keyPressedCheckText[1].setPosition({ 780.f, 0.f });
 
-    auto keyPressedScancodeCheckText1 = sf::Text{ "IsKeyPressed sf::Keyboard::Scancode\n", font, textSize };
-    keyPressedScancodeCheckText1.setPosition({ 1040.f, 0.f });
-    auto keyPressedScancodeCheckText2 = sf::Text{ "IsKeyPressed sf::Keyboard::Scancode\n", font, textSize };
-    keyPressedScancodeCheckText2.setPosition({ 1300.f, 0.f });
-    auto keyPressedScancodeCheckText3 = sf::Text{ "IsKeyPressed sf::Keyboard::Scancode\n", font, textSize };
-    keyPressedScancodeCheckText3.setPosition({ 1560.f, 0.f });
+    auto keyPressedScancodeCheckText = std::array<sf::Text, 3>{};
+    keyPressedScancodeCheckText.fill(sf::Text{ "IsKeyPressed sf::Keyboard::Scancode\n", font, textSize });
+    keyPressedScancodeCheckText[0].setPosition({ 1040.f, 0.f });
+    keyPressedScancodeCheckText[1].setPosition({ 1300.f, 0.f });
+    keyPressedScancodeCheckText[2].setPosition({ 1560.f, 0.f });
 
     auto mouseButtonPressedText = sf::Text{ "Mouse Button Pressed\n", font, textSize };
     mouseButtonPressedText.setPosition({ 0.f, 400.f });
@@ -135,7 +134,7 @@ int main()
             text += "\n";
         }
 
-        keyPressedCheckText1.setString(text);
+        keyPressedCheckText[0].setString(text);
 
         text = sf::String{ "\n\nCode / Description / Delocalized / Y/N\n" };
 
@@ -151,7 +150,7 @@ int main()
             text += "\n";
         }
 
-        keyPressedCheckText2.setString(text);
+        keyPressedCheckText[1].setString(text);
 
         for (auto i = 0; i < sf::Keyboard::ScancodeCount; ++i)
         {
@@ -173,7 +172,7 @@ int main()
             text += "\n";
         }
 
-        keyPressedScancodeCheckText1.setString(text);
+        keyPressedScancodeCheckText[0].setString(text);
 
         text = sf::String{ "\n\nScanCode / Description / Localized / Y/N\n" };
 
@@ -189,7 +188,7 @@ int main()
             text += "\n";
         }
 
-        keyPressedScancodeCheckText2.setString(text);
+        keyPressedScancodeCheckText[1].setString(text);
 
         text = sf::String{ "\n\nScanCode / Description / Localized / Y/N\n" };
 
@@ -205,7 +204,7 @@ int main()
             text += "\n";
         }
 
-        keyPressedScancodeCheckText3.setString(text);
+        keyPressedScancodeCheckText[2].setString(text);
 
         /*
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::ScanEnter))
@@ -256,11 +255,11 @@ int main()
 
         window.draw(keyPressedText);
         window.draw(keyReleasedText);
-        window.draw(keyPressedCheckText1);
-        window.draw(keyPressedCheckText2);
-        window.draw(keyPressedScancodeCheckText1);
-        window.draw(keyPressedScancodeCheckText2);
-        window.draw(keyPressedScancodeCheckText3);
+
+        for (const auto& text : keyPressedCheckText)
+            window.draw(text);
+        for (const auto& text : keyPressedScancodeCheckText)
+            window.draw(text);
 
         window.draw(mouseButtonPressedText);
         window.draw(mouseButtonReleasedText);

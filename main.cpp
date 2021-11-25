@@ -1,11 +1,14 @@
 #include <array>
 #include <iostream>
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 
 sf::String keyEventDescription(sf::String init, const sf::Event::KeyEvent& keyEvent);
 sf::String buttonDescription(sf::String init, sf::Mouse::Button button);
 sf::String keyDescription(sf::Keyboard::Key code, bool keyPressed);
 sf::String scancodeDescription(sf::Keyboard::Scancode scancode, bool scancodeKeyPressed);
+
+bool seemsStrange(const sf::Event::KeyEvent& keyEvent);
 
 int main()
 {
@@ -19,10 +22,24 @@ int main()
 
     std::cout << '\n';
 
+    sf::SoundBuffer errorSoundBuffer, pressedSoundBuffer, releasedSoundBuffer;
+    if (!errorSoundBuffer.loadFromFile("error_005.ogg") ||
+        !pressedSoundBuffer.loadFromFile("mouseclick1.ogg") ||
+        !releasedSoundBuffer.loadFromFile("mouserelease1.ogg"))
+    {
+        std::cerr << "Failed to load sound" << std::endl;
+        return 1;
+    }
+
+    auto errorSound    = sf::Sound{ errorSoundBuffer },
+         pressedSound  = sf::Sound{ pressedSoundBuffer },
+         releasedSound = sf::Sound{ releasedSoundBuffer };
+
     auto font = sf::Font{};
     if (!font.loadFromFile("Tuffy.ttf"))
     {
         std::cerr << "Failed to load font" << std::endl;
+        return 1;
     }
 
     constexpr unsigned int textSize = 13u;
@@ -68,6 +85,11 @@ int main()
 
                 keyPressedText.setString(text);
                 std::cout << text.toAnsiString();
+
+                if(seemsStrange(event.key))
+                    errorSound.play();
+                else
+                    pressedSound.play();
             }
             else if (event.type == sf::Event::KeyReleased)
             {
@@ -75,6 +97,11 @@ int main()
 
                 keyReleasedText.setString(text);
                 std::cout << text.toAnsiString();
+
+                if(seemsStrange(event.key))
+                    errorSound.play();
+                else
+                    releasedSound.play();
             }
             else if (event.type == sf::Event::MouseButtonPressed)
             {
@@ -82,6 +109,8 @@ int main()
 
                 mouseButtonPressedText.setString(text);
                 std::cout << text.toAnsiString();
+
+                pressedSound.play();
             }
             else if (event.type == sf::Event::MouseButtonReleased)
             {
@@ -89,6 +118,8 @@ int main()
 
                 mouseButtonReleasedText.setString(text);
                 std::cout << text.toAnsiString();
+
+                releasedSound.play();
             }
         }
 
@@ -216,4 +247,13 @@ sf::String scancodeDescription(sf::Keyboard::Scancode scancode, bool scancodeKey
     text += "\n";
 
     return text;
+}
+
+bool seemsStrange(const sf::Event::KeyEvent& keyEvent)
+{
+    return keyEvent.code == -1
+        || keyEvent.scancode == -1
+        || sf::Keyboard::getDescription(keyEvent.scancode) == ""
+        || sf::Keyboard::localize(keyEvent.scancode) != keyEvent.code
+        || sf::Keyboard::delocalize(keyEvent.code) != keyEvent.scancode;
 }

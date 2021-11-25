@@ -97,22 +97,23 @@ int main()
             keys[i] = sf::Keyboard::isKeyPressed(static_cast<sf::Keyboard::Key>(i));
         }
 
-        constexpr auto keyBounds = std::array<int, 3>{0, sf::Keyboard::Apostrophe, sf::Keyboard::KeyCount};
-        auto text = sf::String{ "IsKeyPressed sf::Keyboard::Key" };
-        for (int b = 0; b < keyBounds.size() - 1; ++b)
         {
-            text += "\n\nCode / Description / Delocalized / Y/N\n";
-
-            for (auto i = keyBounds[b]; i < keyBounds[b + 1]; ++i)
+            constexpr auto keyBounds = std::array<int, 3>{0, sf::Keyboard::Apostrophe, sf::Keyboard::KeyCount};
+            auto text = sf::String{ "IsKeyPressed sf::Keyboard::Key" };
+            for (int b = 0; b < keyBounds.size() - 1; ++b)
             {
-                auto code = static_cast<sf::Keyboard::Key>(i);
-                auto keyPressed = keys[i];
+                text += "\n\nCode / Description / Delocalized / Y/N\n";
+                for (auto i = keyBounds[b]; i < keyBounds[b + 1]; ++i)
+                {
+                    auto code = static_cast<sf::Keyboard::Key>(i);
+                    auto keyPressed = keys[i];
 
-                text += keyDescription(code, keyPressed);
+                    text += keyDescription(code, keyPressed);
+                }
+
+                keyPressedCheckText[b].setString(text);
+                text.clear();
             }
-
-            keyPressedCheckText[b].setString(text);
-            text.clear();
         }
 
         for (auto i = 0; i < sf::Keyboard::ScancodeCount; ++i)
@@ -120,21 +121,23 @@ int main()
             scancodeKeys[i] = sf::Keyboard::isKeyPressed(static_cast<sf::Keyboard::Scancode>(i));
         }
 
-        constexpr auto scancodeBounds = std::array<int, 4>{0, sf::Keyboard::ScanComma, sf::Keyboard::ScanNumpad1, sf::Keyboard::ScancodeCount};
-        text = sf::String{ "IsKeyPressed sf::Keyboard::Scancode" };
-        for (int b = 0; b < scancodeBounds.size() - 1; ++b)
         {
-            text += "\n\nScanCode / Description / Localized / Y/N\n";
-            for (auto i = scancodeBounds[b]; i < scancodeBounds[b + 1]; ++i)
+            constexpr auto scancodeBounds = std::array<int, 4>{0, sf::Keyboard::ScanComma, sf::Keyboard::ScanNumpad1, sf::Keyboard::ScancodeCount};
+            auto text = sf::String{ "IsKeyPressed sf::Keyboard::Scancode" };
+            for (int b = 0; b < scancodeBounds.size() - 1; ++b)
             {
-                auto scancode = static_cast<sf::Keyboard::Scancode>(i);
-                auto scancodeKeyPressed = scancodeKeys[i];
+                text += "\n\nScanCode / Description / Localized / Y/N\n";
+                for (auto i = scancodeBounds[b]; i < scancodeBounds[b + 1]; ++i)
+                {
+                    auto scancode = static_cast<sf::Keyboard::Scancode>(i);
+                    auto scancodeKeyPressed = scancodeKeys[i];
 
-                text += scancodeDescription(scancode, scancodeKeyPressed);
+                    text += scancodeDescription(scancode, scancodeKeyPressed);
+                }
+
+                keyPressedScancodeCheckText[b].setString(text);
+                text.clear();
             }
-
-            keyPressedScancodeCheckText[b].setString(text);
-            text.clear();
         }
 
         for (auto i = 0; i < sf::Mouse::ButtonCount; ++i)

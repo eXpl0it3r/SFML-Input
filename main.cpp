@@ -3,6 +3,9 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 
+std::string encodeStringToAnsi(const sf::String& string);
+std::string encodeStringToUtf8(const sf::String& string);
+
 sf::String keyEventDescription(sf::String init, const sf::Event::KeyEvent& keyEvent);
 sf::String buttonDescription(sf::String init, sf::Mouse::Button button);
 sf::String keyDescription(sf::Keyboard::Key code, bool keyPressed);
@@ -10,14 +13,17 @@ sf::String scancodeDescription(sf::Keyboard::Scancode scancode, bool scancodeKey
 
 bool seemsStrange(const sf::Event::KeyEvent& keyEvent);
 
-int main()
+int main(int argc, char* argv[])
 {
+    // Select UTF-8 output if the program was launched with an argument
+    const auto encode = argc > 1 ? encodeStringToUtf8 : encodeStringToAnsi;
+
     auto window = sf::RenderWindow{ {1920, 1080}, "SFML Input Test" };
     window.setFramerateLimit(15);
 
     for (auto i = 0; i < sf::Keyboard::ScancodeCount; ++i)
     {
-        std::cout << i << ":\t" << sf::Keyboard::getDescription(static_cast<sf::Keyboard::Scancode>(i)).toAnsiString() << '\n';
+        std::cout << i << ":\t" << encode(sf::Keyboard::getDescription(static_cast<sf::Keyboard::Scancode>(i))) << '\n';
     }
 
     std::cout << '\n';
@@ -84,7 +90,7 @@ int main()
                 auto text = keyEventDescription("Key Pressed", event.key);
 
                 keyPressedText.setString(text);
-                std::cout << text.toAnsiString();
+                std::cout << encode(text);
 
                 if(seemsStrange(event.key))
                     errorSound.play();
@@ -96,7 +102,7 @@ int main()
                 auto text = keyEventDescription("Key Released", event.key);
 
                 keyReleasedText.setString(text);
-                std::cout << text.toAnsiString();
+                std::cout << encode(text);
 
                 if(seemsStrange(event.key))
                     errorSound.play();
@@ -108,7 +114,7 @@ int main()
                 auto text = buttonDescription("Mouse Button Pressed", event.mouseButton.button);
 
                 mouseButtonPressedText.setString(text);
-                std::cout << text.toAnsiString();
+                std::cout << encode(text);
 
                 pressedSound.play();
             }
@@ -117,7 +123,7 @@ int main()
                 auto text = buttonDescription("Mouse Button Released", event.mouseButton.button);
 
                 mouseButtonReleasedText.setString(text);
-                std::cout << text.toAnsiString();
+                std::cout << encode(text);
 
                 releasedSound.play();
             }
@@ -179,7 +185,7 @@ int main()
                 auto text = buttonDescription("IsButtonPressed sf::Mouse::Button", button);
 
                 mouseButtonPressedCheckText.setString(text);
-                std::cout << text.toAnsiString();
+                std::cout << encode(text);
             }
         }
 
@@ -199,6 +205,25 @@ int main()
 
         window.display();
     }
+}
+
+std::string encodeStringToAnsi(const sf::String& string)
+{
+    return string.toAnsiString();
+}
+
+std::string encodeStringToUtf8(const sf::String& string)
+{
+    // sf::String::toUtf8 returns std::basic_string<sf::Uint8>
+    // which cannot be converted cheaply to std::basic_string<char>
+    // so the conversion is done with sf::Utf32::toUtf8 here.
+
+    std::string output;
+    output.reserve(string.getSize());
+
+    sf::Utf32::toUtf8(string.begin(), string.end(), std::back_inserter(output));
+
+    return output;
 }
 
 sf::String keyEventDescription(sf::String text, const sf::Event::KeyEvent& keyEvent)

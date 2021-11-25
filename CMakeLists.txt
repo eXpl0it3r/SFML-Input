@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD 17)
 if(WIN32)
 	set(SFML_STATIC_LIBRARIES TRUE)
 endif()
-find_package(SFML 2.5 COMPONENTS graphics REQUIRED)
+find_package(SFML 2.5 COMPONENTS graphics audio REQUIRED)
 
 add_executable(SFML-Input main.cpp)
 
@@ -20,7 +20,7 @@ if(WIN32)
 	endif()
 endif()
 
-target_link_libraries(SFML-Input sfml-graphics)
+target_link_libraries(SFML-Input sfml-graphics sfml-audio)
 
 install(TARGETS SFML-Input DESTINATION .)
-install(FILES "Tuffy.ttf" DESTINATION .)
+install(FILES "Tuffy.ttf" "error_005.ogg" "mouseclick1.ogg" "mouserelease1.ogg" DESTINATION .)

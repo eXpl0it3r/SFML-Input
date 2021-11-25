@@ -207,37 +207,6 @@ int main()
 
         keyPressedScancodeCheckText[2].setString(text);
 
-        /*
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::ScanEnter))
-        {
-            auto text = sf::String{ "IsKeyPressed sf::Keyboard::Scancode" };
-            text += "\nScanCode:\t";
-            text += std::to_string(sf::Keyboard::ScanEnter);
-            text += "\nDescription:\t";
-            text += sf::Keyboard::getDescription(sf::Keyboard::ScanEnter);
-            text += "\nLocalized:\t";
-            text += std::to_string(sf::Keyboard::localize(sf::Keyboard::ScanEnter));
-            text += "\n\n";
-
-            keyPressedScancodeCheckText.setString(text);
-            std::cout << text.toAnsiString();
-        }
-
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::ScanNumpadEnter))
-        {
-            auto text = sf::String{ "IsKeyPressed sf::Keyboard::Scancode" };
-            text += "\nScanCode:\t";
-            text += std::to_string(sf::Keyboard::ScanNumpadEnter);
-            text += "\nDescription:\t";
-            text += sf::Keyboard::getDescription(sf::Keyboard::ScanNumpadEnter);
-            text += "\nLocalized:\t";
-            text += std::to_string(sf::Keyboard::localize(sf::Keyboard::ScanNumpadEnter));
-            text += "\n\n";
-
-            keyPressedScancodeCheckText.setString(text);
-            std::cout << text.toAnsiString();
-        }*/
-
         for (auto i = 0; i < sf::Mouse::ButtonCount; ++i)
         {
             auto button = static_cast<sf::Mouse::Button>(i);

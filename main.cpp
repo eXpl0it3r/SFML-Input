@@ -13,6 +13,10 @@ sf::String scancodeDescription(sf::Keyboard::Scancode scancode, bool scancodeKey
 
 bool seemsStrange(const sf::Event::KeyEvent& keyEvent);
 
+sf::String keyIdentifier(sf::Keyboard::Key code);
+sf::String scancodeIdentifier(sf::Keyboard::Scancode scancode);
+sf::String buttonIdentifier(sf::Mouse::Button button);
+
 int main(int argc, char* argv[])
 {
     // Select UTF-8 output if the program was launched with an argument
@@ -230,14 +234,22 @@ sf::String keyEventDescription(sf::String text, const sf::Event::KeyEvent& keyEv
 {
     text += "\n\nCode:\t\t";
     text += std::to_string(keyEvent.code);
+    text += "\tsf::Keyboard::";
+    text += keyIdentifier(keyEvent.code);
     text += "\nScanCode:\t";
     text += std::to_string(keyEvent.scancode);
+    text += "\tsf::Keyboard::";
+    text += scancodeIdentifier(keyEvent.scancode);
     text += "\nDescription:\t";
     text += sf::Keyboard::getDescription(keyEvent.scancode);
     text += "\nLocalized:\t";
     text += std::to_string(sf::Keyboard::localize(keyEvent.scancode));
+    text += "\tsf::Keyboard::";
+    text += keyIdentifier(sf::Keyboard::localize(keyEvent.scancode));
     text += "\nDelocalized:\t";
     text += std::to_string(sf::Keyboard::delocalize(keyEvent.code));
+    text += "\tsf::Keyboard::";
+    text += scancodeIdentifier(sf::Keyboard::delocalize(keyEvent.code));
     text += "\n\n";
 
     return text;
@@ -247,6 +259,8 @@ sf::String buttonDescription(sf::String text, sf::Mouse::Button button)
 {
     text += "\n\nButton:\t";
     text += std::to_string(button);
+    text += "\tsf::Mouse::";
+    text += buttonIdentifier(button);
     text += "\n\n";
 
     return text;
@@ -281,4 +295,68 @@ bool seemsStrange(const sf::Event::KeyEvent& keyEvent)
         || sf::Keyboard::getDescription(keyEvent.scancode) == ""
         || sf::Keyboard::localize(keyEvent.scancode) != keyEvent.code
         || sf::Keyboard::delocalize(keyEvent.code) != keyEvent.scancode;
+}
+
+sf::String keyIdentifier(sf::Keyboard::Key code)
+{
+    static constexpr auto identifiers = std::array
+    {
+        "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O",
+        "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "Num0", "Num1",
+        "Num2", "Num3", "Num4", "Num5", "Num6", "Num7", "Num8", "Num9", "Escape",
+        "LControl", "LShift", "LAlt", "LSystem", "RControl", "RShift", "RAlt",
+        "RSystem", "Menu", "LBracket", "RBracket", "Semicolon", "Comma", "Period",
+        "Apostrophe", "Slash", "Backslash", "Tilde", "Equal", "Hyphen", "Space",
+        "Enter", "Backspace", "Tab", "PageUp", "PageDown", "End", "Home", "Insert",
+        "Delete", "Add", "Subtract", "Multiply", "Divide", "Left", "Right", "Up",
+        "Down", "Numpad0", "Numpad1", "Numpad2", "Numpad3", "Numpad4", "Numpad5",
+        "Numpad6", "Numpad7", "Numpad8", "Numpad9", "F1", "F2", "F3", "F4", "F5",
+        "F6", "F7", "F8", "F9", "F10", "F11", "F12", "F13", "F14", "F15", "Pause"
+         };
+
+    return code == -1 ? "Unknown" : identifiers[code];
+}
+
+sf::String scancodeIdentifier(sf::Keyboard::Scancode scancode)
+{
+    static constexpr auto identifiers = std::array
+    {
+        "ScanA", "ScanB", "ScanC", "ScanD", "ScanE", "ScanF", "ScanG", "ScanH", "ScanI",
+        "ScanJ", "ScanK", "ScanL", "ScanM", "ScanN", "ScanO", "ScanP", "ScanQ",
+        "ScanR", "ScanS", "ScanT", "ScanU", "ScanV", "ScanW", "ScanX", "ScanY",
+        "ScanZ", "ScanNum1", "ScanNum2", "ScanNum3", "ScanNum4", "ScanNum5", "ScanNum6",
+        "ScanNum7", "ScanNum8", "ScanNum9", "ScanNum0", "ScanEnter", "ScanEscape",
+        "ScanBackspace", "ScanTab", "ScanSpace", "ScanHyphen", "ScanEqual", "ScanLBracket",
+        "ScanRBracket", "ScanBackslash", "ScanSemicolon", "ScanApostrophe", "ScanGrave",
+        "ScanComma", "ScanPeriod", "ScanSlash", "ScanF1", "ScanF2", "ScanF3", "ScanF4",
+        "ScanF5", "ScanF6", "ScanF7", "ScanF8", "ScanF9", "ScanF10", "ScanF11",
+        "ScanF12", "ScanF13", "ScanF14", "ScanF15", "ScanF16", "ScanF17", "ScanF18",
+        "ScanF19", "ScanF20", "ScanF21", "ScanF22", "ScanF23", "ScanF24", "ScanCapsLock",
+        "ScanPrintScreen", "ScanScrollLock", "ScanPause", "ScanInsert", "ScanHome",
+        "ScanPageUp", "ScanDelete", "ScanEnd", "ScanPageDown", "ScanRight", "ScanLeft",
+        "ScanDown", "ScanUp", "ScanNumLock", "ScanNumpadDivide", "ScanNumpadMultiply",
+        "ScanNumpadMinus", "ScanNumpadPlus", "ScanNumpadEqual", "ScanNumpadEnter",
+        "ScanNumpadDecimal", "ScanNumpad1", "ScanNumpad2", "ScanNumpad3", "ScanNumpad4",
+        "ScanNumpad5", "ScanNumpad6", "ScanNumpad7", "ScanNumpad8", "ScanNumpad9",
+        "ScanNumpad0", "ScanNonUsBackslash", "ScanApplication", "ScanExecute",
+        "ScanModeChange", "ScanHelp", "ScanMenu", "ScanSelect", "ScanRedo", "ScanUndo",
+        "ScanCut", "ScanCopy", "ScanPaste", "ScanVolumeMute", "ScanVolumeUp", "ScanVolumeDown",
+        "ScanMediaPlayPause", "ScanMediaStop", "ScanMediaNextTrack", "ScanMediaPreviousTrack",
+        "ScanLControl", "ScanLShift", "ScanLAlt", "ScanLSystem", "ScanRControl",
+        "ScanRShift", "ScanRAlt", "ScanRSystem", "ScanBack", "ScanForward", "ScanRefresh",
+        "ScanStop", "ScanSearch", "ScanFavorites", "ScanHomePage", "ScanLaunchApplication1",
+        "ScanLaunchApplication2", "ScanLaunchMail", "ScanLaunchMediaSelect"
+     };
+
+    return scancode == -1 ? "ScanUnknown" : identifiers[scancode];
+}
+
+sf::String buttonIdentifier(sf::Mouse::Button button)
+{
+    static constexpr auto identifiers = std::array
+    {
+        "Left", "Right", "Middle", "XButton1", "XButton2"
+    };
+
+    return identifiers[button];
 }

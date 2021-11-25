@@ -1,3 +1,4 @@
+#include <array>
 #include <iostream>
 #include <SFML/Graphics.hpp>
 
@@ -45,17 +46,8 @@ int main()
     auto mouseButtonPressedCheckText = sf::Text{ "IsButtonPressed\n", font, textSize };
     mouseButtonPressedCheckText.setPosition({ 0.f, 600.f });
 
-    auto keys = std::map<sf::Keyboard::Key, bool>{};
-    for (auto key = sf::Keyboard::Key::Unknown; key < sf::Keyboard::Key::KeyCount; key = static_cast<sf::Keyboard::Key>(static_cast<unsigned int>(key) + 1))
-    {
-        keys.emplace(key, false);
-    }
-
-    auto scancodeKeys = std::map<sf::Keyboard::Scancode, bool>{};
-    for (auto scancode = sf::Keyboard::Scancode::ScanUnknown; scancode < sf::Keyboard::Scancode::ScancodeCount; scancode = static_cast<sf::Keyboard::Scancode>(static_cast<unsigned int>(scancode) + 1))
-    {
-        scancodeKeys.emplace(scancode, false);
-    }
+    auto keys = std::array<bool, sf::Keyboard::KeyCount>{};
+    auto scancodeKeys = std::array<bool, sf::Keyboard::ScancodeCount>{};
 
     while (window.isOpen())
     {
@@ -125,7 +117,7 @@ int main()
 
         for (auto i = 0; i < sf::Keyboard::KeyCount; ++i)
         {
-            keys[static_cast<sf::Keyboard::Key>(i)] = sf::Keyboard::isKeyPressed(static_cast<sf::Keyboard::Key>(i));
+            keys[i] = sf::Keyboard::isKeyPressed(static_cast<sf::Keyboard::Key>(i));
         }
 
         auto text = sf::String{ "IsKeyPressed sf::Keyboard::Key" };
@@ -134,7 +126,7 @@ int main()
         for (auto i = 0; i < sf::Keyboard::Apostrophe; ++i)
         {
             auto code = static_cast<sf::Keyboard::Key>(i);
-            auto keyPressed = keys[code];
+            auto keyPressed = keys[i];
 
             text.insert(text.getSize(), std::to_string(i) + " / ");
             text.insert(text.getSize(), sf::Keyboard::getDescription(sf::Keyboard::delocalize(code)) + " / ");
@@ -150,7 +142,7 @@ int main()
         for (auto i = static_cast<int>(sf::Keyboard::Apostrophe); i < sf::Keyboard::KeyCount; ++i)
         {
             auto code = static_cast<sf::Keyboard::Key>(i);
-            auto keyPressed = keys[code];
+            auto keyPressed = keys[i];
 
             text.insert(text.getSize(), std::to_string(i) + " / ");
             text.insert(text.getSize(), sf::Keyboard::getDescription(sf::Keyboard::delocalize(code)) + " / ");
@@ -163,7 +155,7 @@ int main()
 
         for (auto i = 0; i < sf::Keyboard::ScancodeCount; ++i)
         {
-            scancodeKeys[static_cast<sf::Keyboard::Scancode>(i)] = sf::Keyboard::isKeyPressed(static_cast<sf::Keyboard::Scancode>(i));
+            scancodeKeys[i] = sf::Keyboard::isKeyPressed(static_cast<sf::Keyboard::Scancode>(i));
         }
 
         text = sf::String{ "IsKeyPressed sf::Keyboard::Scancode" };
@@ -172,7 +164,7 @@ int main()
         for (auto i = 0; i < sf::Keyboard::ScanComma; ++i)
         {
             auto scancode = static_cast<sf::Keyboard::Scancode>(i);
-            auto scancodeKeyPressed = scancodeKeys[scancode];
+            auto scancodeKeyPressed = scancodeKeys[i];
 
             text.insert(text.getSize(), std::to_string(i) + " / ");
             text.insert(text.getSize(), sf::Keyboard::getDescription(scancode) + " / ");
@@ -188,7 +180,7 @@ int main()
         for (auto i = static_cast<int>(sf::Keyboard::ScanComma); i < sf::Keyboard::ScanNumpad1; ++i)
         {
             auto scancode = static_cast<sf::Keyboard::Scancode>(i);
-            auto scancodeKeyPressed = scancodeKeys[scancode];
+            auto scancodeKeyPressed = scancodeKeys[i];
 
             text.insert(text.getSize(), std::to_string(i) + " / ");
             text.insert(text.getSize(), sf::Keyboard::getDescription(scancode) + " / ");
@@ -204,7 +196,7 @@ int main()
         for (auto i = static_cast<int>(sf::Keyboard::ScanNumpad1); i < sf::Keyboard::ScancodeCount; ++i)
         {
             auto scancode = static_cast<sf::Keyboard::Scancode>(i);
-            auto scancodeKeyPressed = scancodeKeys[scancode];
+            auto scancodeKeyPressed = scancodeKeys[i];
 
             text.insert(text.getSize(), std::to_string(i) + " / ");
             text.insert(text.getSize(), sf::Keyboard::getDescription(scancode) + " / ");

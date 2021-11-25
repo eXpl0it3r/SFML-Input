@@ -92,15 +92,15 @@ int main()
             }
         }
 
-        for (auto i = 0; i < sf::Keyboard::KeyCount; ++i)
+        for (auto i = 0u; i < sf::Keyboard::KeyCount; ++i)
         {
             keys[i] = sf::Keyboard::isKeyPressed(static_cast<sf::Keyboard::Key>(i));
         }
 
         {
-            constexpr auto keyBounds = std::array<int, 3>{0, sf::Keyboard::Apostrophe, sf::Keyboard::KeyCount};
+            constexpr auto keyBounds = std::array<unsigned, 3>{0, sf::Keyboard::Apostrophe, sf::Keyboard::KeyCount};
             auto text = sf::String{ "IsKeyPressed sf::Keyboard::Key" };
-            for (int b = 0; b < keyBounds.size() - 1; ++b)
+            for (auto b = 0u; b < keyBounds.size() - 1; ++b)
             {
                 text += "\n\nCode / Description / Delocalized / Y/N\n";
                 for (auto i = keyBounds[b]; i < keyBounds[b + 1]; ++i)
@@ -116,15 +116,15 @@ int main()
             }
         }
 
-        for (auto i = 0; i < sf::Keyboard::ScancodeCount; ++i)
+        for (auto i = 0u; i < sf::Keyboard::ScancodeCount; ++i)
         {
             scancodeKeys[i] = sf::Keyboard::isKeyPressed(static_cast<sf::Keyboard::Scancode>(i));
         }
 
         {
-            constexpr auto scancodeBounds = std::array<int, 4>{0, sf::Keyboard::ScanComma, sf::Keyboard::ScanNumpad1, sf::Keyboard::ScancodeCount};
+            constexpr auto scancodeBounds = std::array<unsigned, 4>{0, sf::Keyboard::ScanComma, sf::Keyboard::ScanNumpad1, sf::Keyboard::ScancodeCount};
             auto text = sf::String{ "IsKeyPressed sf::Keyboard::Scancode" };
-            for (int b = 0; b < scancodeBounds.size() - 1; ++b)
+            for (auto b = 0u; b < scancodeBounds.size() - 1; ++b)
             {
                 text += "\n\nScanCode / Description / Localized / Y/N\n";
                 for (auto i = scancodeBounds[b]; i < scancodeBounds[b + 1]; ++i)

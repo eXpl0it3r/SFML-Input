@@ -60,17 +60,17 @@ int main()
             else if(event.type == sf::Event::KeyPressed)
             {
                 auto text = sf::String{ "Key Pressed" };
-                text.insert(text.getSize(), "\n\nCode:\t\t");
-                text.insert(text.getSize(), std::to_string(event.key.code));
-                text.insert(text.getSize(), "\nScanCode:\t");
-                text.insert(text.getSize(), std::to_string(event.key.scancode));
-                text.insert(text.getSize(), "\nDescription:\t");
-                text.insert(text.getSize(), sf::Keyboard::getDescription(event.key.scancode));
-                text.insert(text.getSize(), "\nLocalized:\t");
-                text.insert(text.getSize(), std::to_string(sf::Keyboard::localize(event.key.scancode)));
-                text.insert(text.getSize(), "\nDelocalized:\t");
-                text.insert(text.getSize(), std::to_string(sf::Keyboard::delocalize(event.key.code)));
-                text.insert(text.getSize(), "\n\n");
+                text += "\n\nCode:\t\t";
+                text += std::to_string(event.key.code);
+                text += "\nScanCode:\t";
+                text += std::to_string(event.key.scancode);
+                text += "\nDescription:\t";
+                text += sf::Keyboard::getDescription(event.key.scancode);
+                text += "\nLocalized:\t";
+                text += std::to_string(sf::Keyboard::localize(event.key.scancode));
+                text += "\nDelocalized:\t";
+                text += std::to_string(sf::Keyboard::delocalize(event.key.code));
+                text += "\n\n";
 
                 keyPressedText.setString(text);
                 std::cout << text.toAnsiString();
@@ -78,17 +78,17 @@ int main()
             else if (event.type == sf::Event::KeyReleased)
             {
                 auto text = sf::String{ "Key Released" };
-                text.insert(text.getSize(), "\n\nCode:\t\t");
-                text.insert(text.getSize(), std::to_string(event.key.code));
-                text.insert(text.getSize(), "\nScanCode:\t");
-                text.insert(text.getSize(), std::to_string(event.key.scancode));
-                text.insert(text.getSize(), "\nDescription:\t");
-                text.insert(text.getSize(), sf::Keyboard::getDescription(event.key.scancode));
-                text.insert(text.getSize(), "\nLocalized:\t");
-                text.insert(text.getSize(), std::to_string(sf::Keyboard::localize(event.key.scancode)));
-                text.insert(text.getSize(), "\nDelocalized:\t");
-                text.insert(text.getSize(), std::to_string(sf::Keyboard::delocalize(event.key.code)));
-                text.insert(text.getSize(), "\n\n");
+                text += "\n\nCode:\t\t";
+                text += std::to_string(event.key.code);
+                text += "\nScanCode:\t";
+                text += std::to_string(event.key.scancode);
+                text += "\nDescription:\t";
+                text += sf::Keyboard::getDescription(event.key.scancode);
+                text += "\nLocalized:\t";
+                text += std::to_string(sf::Keyboard::localize(event.key.scancode));
+                text += "\nDelocalized:\t";
+                text += std::to_string(sf::Keyboard::delocalize(event.key.code));
+                text += "\n\n";
 
                 keyReleasedText.setString(text);
                 std::cout << text.toAnsiString();
@@ -96,9 +96,9 @@ int main()
             else if (event.type == sf::Event::MouseButtonPressed)
             {
                 auto text = sf::String{ "Mouse Button Pressed" };
-                text.insert(text.getSize(), "\n\nButton:\t");
-                text.insert(text.getSize(), std::to_string(event.mouseButton.button));
-                text.insert(text.getSize(), "\n\n");
+                text += "\n\nButton:\t";
+                text += std::to_string(event.mouseButton.button);
+                text += "\n\n";
 
                 mouseButtonPressedText.setString(text);
                 std::cout << text.toAnsiString();
@@ -106,9 +106,9 @@ int main()
             else if (event.type == sf::Event::MouseButtonReleased)
             {
                 auto text = sf::String{ "Mouse Button Released" };
-                text.insert(text.getSize(), "\n\nButton:\t");
-                text.insert(text.getSize(), std::to_string(event.mouseButton.button));
-                text.insert(text.getSize(), "\n\n");
+                text += "\n\nButton:\t";
+                text += std::to_string(event.mouseButton.button);
+                text += "\n\n";
 
                 mouseButtonReleasedText.setString(text);
                 std::cout << text.toAnsiString();
@@ -121,18 +121,18 @@ int main()
         }
 
         auto text = sf::String{ "IsKeyPressed sf::Keyboard::Key" };
-        text.insert(text.getSize(), "\n\nCode / Description / Delocalized / Y/N\n");
+        text += "\n\nCode / Description / Delocalized / Y/N\n";
 
         for (auto i = 0; i < sf::Keyboard::Apostrophe; ++i)
         {
             auto code = static_cast<sf::Keyboard::Key>(i);
             auto keyPressed = keys[i];
 
-            text.insert(text.getSize(), std::to_string(i) + " / ");
-            text.insert(text.getSize(), sf::Keyboard::getDescription(sf::Keyboard::delocalize(code)) + " / ");
-            text.insert(text.getSize(), std::to_string(sf::Keyboard::delocalize(code)) + " / ");
-            text.insert(text.getSize(), keyPressed ? "Y" : "N");
-            text.insert(text.getSize(), "\n");
+            text += std::to_string(i) + " / ";
+            text += sf::Keyboard::getDescription(sf::Keyboard::delocalize(code)) + " / ";
+            text += std::to_string(sf::Keyboard::delocalize(code)) + " / ";
+            text += keyPressed ? "Y" : "N";
+            text += "\n";
         }
 
         keyPressedCheckText1.setString(text);
@@ -144,11 +144,11 @@ int main()
             auto code = static_cast<sf::Keyboard::Key>(i);
             auto keyPressed = keys[i];
 
-            text.insert(text.getSize(), std::to_string(i) + " / ");
-            text.insert(text.getSize(), sf::Keyboard::getDescription(sf::Keyboard::delocalize(code)) + " / ");
-            text.insert(text.getSize(), std::to_string(sf::Keyboard::delocalize(code)) + " / ");
-            text.insert(text.getSize(), keyPressed ? "Y" : "N");
-            text.insert(text.getSize(), "\n");
+            text += std::to_string(i) + " / ";
+            text += sf::Keyboard::getDescription(sf::Keyboard::delocalize(code)) + " / ";
+            text += std::to_string(sf::Keyboard::delocalize(code)) + " / ";
+            text += keyPressed ? "Y" : "N";
+            text += "\n";
         }
 
         keyPressedCheckText2.setString(text);
@@ -159,18 +159,18 @@ int main()
         }
 
         text = sf::String{ "IsKeyPressed sf::Keyboard::Scancode" };
-        text.insert(text.getSize(), "\n\nScanCode / Description / Localized / Y/N\n");
+        text += "\n\nScanCode / Description / Localized / Y/N\n";
 
         for (auto i = 0; i < sf::Keyboard::ScanComma; ++i)
         {
             auto scancode = static_cast<sf::Keyboard::Scancode>(i);
             auto scancodeKeyPressed = scancodeKeys[i];
 
-            text.insert(text.getSize(), std::to_string(i) + " / ");
-            text.insert(text.getSize(), sf::Keyboard::getDescription(scancode) + " / ");
-            text.insert(text.getSize(), std::to_string(sf::Keyboard::localize(scancode)) + " / ");
-            text.insert(text.getSize(), scancodeKeyPressed ? "Y" : "N");
-            text.insert(text.getSize(), "\n");
+            text += std::to_string(i) + " / ";
+            text += sf::Keyboard::getDescription(scancode) + " / ";
+            text += std::to_string(sf::Keyboard::localize(scancode)) + " / ";
+            text += scancodeKeyPressed ? "Y" : "N";
+            text += "\n";
         }
 
         keyPressedScancodeCheckText1.setString(text);
@@ -182,11 +182,11 @@ int main()
             auto scancode = static_cast<sf::Keyboard::Scancode>(i);
             auto scancodeKeyPressed = scancodeKeys[i];
 
-            text.insert(text.getSize(), std::to_string(i) + " / ");
-            text.insert(text.getSize(), sf::Keyboard::getDescription(scancode) + " / ");
-            text.insert(text.getSize(), std::to_string(sf::Keyboard::localize(scancode)) + " / ");
-            text.insert(text.getSize(), scancodeKeyPressed ? "Y" : "N");
-            text.insert(text.getSize(), "\n");
+            text += std::to_string(i) + " / ";
+            text += sf::Keyboard::getDescription(scancode) + " / ";
+            text += std::to_string(sf::Keyboard::localize(scancode)) + " / ";
+            text += scancodeKeyPressed ? "Y" : "N";
+            text += "\n";
         }
 
         keyPressedScancodeCheckText2.setString(text);
@@ -198,11 +198,11 @@ int main()
             auto scancode = static_cast<sf::Keyboard::Scancode>(i);
             auto scancodeKeyPressed = scancodeKeys[i];
 
-            text.insert(text.getSize(), std::to_string(i) + " / ");
-            text.insert(text.getSize(), sf::Keyboard::getDescription(scancode) + " / ");
-            text.insert(text.getSize(), std::to_string(sf::Keyboard::localize(scancode)) + " / ");
-            text.insert(text.getSize(), scancodeKeyPressed ? "Y" : "N");
-            text.insert(text.getSize(), "\n");
+            text += std::to_string(i) + " / ";
+            text += sf::Keyboard::getDescription(scancode) + " / ";
+            text += std::to_string(sf::Keyboard::localize(scancode)) + " / ";
+            text += scancodeKeyPressed ? "Y" : "N";
+            text += "\n";
         }
 
         keyPressedScancodeCheckText3.setString(text);
@@ -211,13 +211,13 @@ int main()
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::ScanEnter))
         {
             auto text = sf::String{ "IsKeyPressed sf::Keyboard::Scancode" };
-            text.insert(text.getSize(), "\nScanCode:\t");
-            text.insert(text.getSize(), std::to_string(sf::Keyboard::ScanEnter));
-            text.insert(text.getSize(), "\nDescription:\t");
-            text.insert(text.getSize(), sf::Keyboard::getDescription(sf::Keyboard::ScanEnter));
-            text.insert(text.getSize(), "\nLocalized:\t");
-            text.insert(text.getSize(), std::to_string(sf::Keyboard::localize(sf::Keyboard::ScanEnter)));
-            text.insert(text.getSize(), "\n\n");
+            text += "\nScanCode:\t";
+            text += std::to_string(sf::Keyboard::ScanEnter);
+            text += "\nDescription:\t";
+            text += sf::Keyboard::getDescription(sf::Keyboard::ScanEnter);
+            text += "\nLocalized:\t";
+            text += std::to_string(sf::Keyboard::localize(sf::Keyboard::ScanEnter));
+            text += "\n\n";
 
             keyPressedScancodeCheckText.setString(text);
             std::cout << text.toAnsiString();
@@ -226,13 +226,13 @@ int main()
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::ScanNumpadEnter))
         {
             auto text = sf::String{ "IsKeyPressed sf::Keyboard::Scancode" };
-            text.insert(text.getSize(), "\nScanCode:\t");
-            text.insert(text.getSize(), std::to_string(sf::Keyboard::ScanNumpadEnter));
-            text.insert(text.getSize(), "\nDescription:\t");
-            text.insert(text.getSize(), sf::Keyboard::getDescription(sf::Keyboard::ScanNumpadEnter));
-            text.insert(text.getSize(), "\nLocalized:\t");
-            text.insert(text.getSize(), std::to_string(sf::Keyboard::localize(sf::Keyboard::ScanNumpadEnter)));
-            text.insert(text.getSize(), "\n\n");
+            text += "\nScanCode:\t";
+            text += std::to_string(sf::Keyboard::ScanNumpadEnter);
+            text += "\nDescription:\t";
+            text += sf::Keyboard::getDescription(sf::Keyboard::ScanNumpadEnter);
+            text += "\nLocalized:\t";
+            text += std::to_string(sf::Keyboard::localize(sf::Keyboard::ScanNumpadEnter));
+            text += "\n\n";
 
             keyPressedScancodeCheckText.setString(text);
             std::cout << text.toAnsiString();
@@ -243,9 +243,9 @@ int main()
             if (sf::Mouse::isButtonPressed(static_cast<sf::Mouse::Button>(i)))
             {
                 auto text = sf::String{ "IsButtonPressed sf::Mouse::Button" };
-                text.insert(text.getSize(), "\nButton:\t");
-                text.insert(text.getSize(), std::to_string(i));
-                text.insert(text.getSize(), "\n\n");
+                text += "\nButton:\t";
+                text += std::to_string(i);
+                text += "\n\n";
 
                 mouseButtonPressedCheckText.setString(text);
                 std::cout << text.toAnsiString();

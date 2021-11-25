@@ -19,28 +19,30 @@ int main()
         std::cerr << "Failed to load font" << std::endl;
     }
 
-    auto keyPressedText = sf::Text{ "Key Pressed\n", font, 13u };
+    constexpr unsigned int textSize = 13u;
+
+    auto keyPressedText = sf::Text{ "Key Pressed\n", font, textSize };
     keyPressedText.setPosition({ 0.f, 0.f });
-    auto keyReleasedText = sf::Text{ "Key Released\n", font, 13u };
+    auto keyReleasedText = sf::Text{ "Key Released\n", font, textSize };
     keyReleasedText.setPosition({ 260.f, 0.f });
 
-    auto keyPressedCheckText1 = sf::Text{ "IsKeyPressed sf::Keyboard::Key\n", font, 13u };
+    auto keyPressedCheckText1 = sf::Text{ "IsKeyPressed sf::Keyboard::Key\n", font, textSize };
     keyPressedCheckText1.setPosition({ 520.f, 0.f });
-    auto keyPressedCheckText2 = sf::Text{ "IsKeyPressed sf::Keyboard::Key\n", font, 13u };
+    auto keyPressedCheckText2 = sf::Text{ "IsKeyPressed sf::Keyboard::Key\n", font, textSize };
     keyPressedCheckText2.setPosition({ 780.f, 0.f });
 
-    auto keyPressedScancodeCheckText1 = sf::Text{ "IsKeyPressed sf::Keyboard::Scancode\n", font, 13u };
+    auto keyPressedScancodeCheckText1 = sf::Text{ "IsKeyPressed sf::Keyboard::Scancode\n", font, textSize };
     keyPressedScancodeCheckText1.setPosition({ 1040.f, 0.f });
-    auto keyPressedScancodeCheckText2 = sf::Text{ "IsKeyPressed sf::Keyboard::Scancode\n", font, 13u };
+    auto keyPressedScancodeCheckText2 = sf::Text{ "IsKeyPressed sf::Keyboard::Scancode\n", font, textSize };
     keyPressedScancodeCheckText2.setPosition({ 1300.f, 0.f });
-    auto keyPressedScancodeCheckText3 = sf::Text{ "IsKeyPressed sf::Keyboard::Scancode\n", font, 13u };
+    auto keyPressedScancodeCheckText3 = sf::Text{ "IsKeyPressed sf::Keyboard::Scancode\n", font, textSize };
     keyPressedScancodeCheckText3.setPosition({ 1560.f, 0.f });
 
-    auto mouseButtonPressedText = sf::Text{ "Mouse Button Pressed\n", font, 13u };
+    auto mouseButtonPressedText = sf::Text{ "Mouse Button Pressed\n", font, textSize };
     mouseButtonPressedText.setPosition({ 0.f, 400.f });
-    auto mouseButtonReleasedText = sf::Text{ "Mouse Button Released\n", font, 13u };
+    auto mouseButtonReleasedText = sf::Text{ "Mouse Button Released\n", font, textSize };
     mouseButtonReleasedText.setPosition({ 0.f, 500.f });
-    auto mouseButtonPressedCheckText = sf::Text{ "IsButtonPressed\n", font, 13u };
+    auto mouseButtonPressedCheckText = sf::Text{ "IsButtonPressed\n", font, textSize };
     mouseButtonPressedCheckText.setPosition({ 0.f, 600.f });
 
     auto keys = std::map<sf::Keyboard::Key, bool>{};

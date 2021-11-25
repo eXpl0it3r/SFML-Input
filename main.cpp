@@ -102,7 +102,7 @@ int main()
             auto text = sf::String{ "IsKeyPressed sf::Keyboard::Key" };
             for (auto b = 0u; b < keyBounds.size() - 1; ++b)
             {
-                text += "\n\nCode / Description / Delocalized / Y/N\n";
+                text += "\n\nCode / Description / Delocalized / Pressed\n";
                 for (auto i = keyBounds[b]; i < keyBounds[b + 1]; ++i)
                 {
                     auto code = static_cast<sf::Keyboard::Key>(i);
@@ -126,7 +126,7 @@ int main()
             auto text = sf::String{ "IsKeyPressed sf::Keyboard::Scancode" };
             for (auto b = 0u; b < scancodeBounds.size() - 1; ++b)
             {
-                text += "\n\nScanCode / Description / Localized / Y/N\n";
+                text += "\n\nScanCode / Description / Localized / Pressed\n";
                 for (auto i = scancodeBounds[b]; i < scancodeBounds[b + 1]; ++i)
                 {
                     auto scancode = static_cast<sf::Keyboard::Scancode>(i);
@@ -200,8 +200,8 @@ sf::String keyDescription(sf::Keyboard::Key code, bool keyPressed)
 {
     sf::String text = std::to_string(code) + " / ";
     text += sf::Keyboard::getDescription(sf::Keyboard::delocalize(code)) + " / ";
-    text += std::to_string(sf::Keyboard::delocalize(code)) + " / ";
-    text += keyPressed ? "Y" : "N";
+    text += std::to_string(sf::Keyboard::delocalize(code));
+    text += keyPressed ? " Pressed" : "";
     text += "\n";
 
     return text;
@@ -211,8 +211,8 @@ sf::String scancodeDescription(sf::Keyboard::Scancode scancode, bool scancodeKey
 {
     sf::String text = std::to_string(scancode) + " / ";
     text += sf::Keyboard::getDescription(scancode) + " / ";
-    text += std::to_string(sf::Keyboard::localize(scancode)) + " / ";
-    text += scancodeKeyPressed ? "Y" : "N";
+    text += std::to_string(sf::Keyboard::localize(scancode));
+    text += scancodeKeyPressed ? " Pressed" : "";
     text += "\n";
 
     return text;

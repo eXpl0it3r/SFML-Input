@@ -15,9 +15,9 @@ sf::String buttonDescription(sf::Mouse::Button button, bool buttonPressed);
 
 bool seemsStrange(const sf::Event::KeyEvent& keyEvent);
 
-sf::String keyIdentifier(sf::Keyboard::Key code);
-sf::String scancodeIdentifier(sf::Keyboard::Scancode scancode);
-sf::String buttonIdentifier(sf::Mouse::Button button);
+std::string keyIdentifier(sf::Keyboard::Key code);
+std::string scancodeIdentifier(sf::Keyboard::Scancode scancode);
+std::string buttonIdentifier(sf::Mouse::Button button);
 
 int main(int argc, char* argv[])
 {
@@ -311,7 +311,7 @@ bool seemsStrange(const sf::Event::KeyEvent& keyEvent)
         || sf::Keyboard::delocalize(keyEvent.code) != keyEvent.scancode;
 }
 
-sf::String keyIdentifier(sf::Keyboard::Key code)
+std::string keyIdentifier(sf::Keyboard::Key code)
 {
     static constexpr auto identifiers = std::array
     {
@@ -331,7 +331,7 @@ sf::String keyIdentifier(sf::Keyboard::Key code)
     return code == -1 ? "Unknown" : identifiers[code];
 }
 
-sf::String scancodeIdentifier(sf::Keyboard::Scancode scancode)
+std::string scancodeIdentifier(sf::Keyboard::Scancode scancode)
 {
     static constexpr auto identifiers = std::array
     {
@@ -365,7 +365,7 @@ sf::String scancodeIdentifier(sf::Keyboard::Scancode scancode)
     return scancode == -1 ? "ScanUnknown" : identifiers[scancode];
 }
 
-sf::String buttonIdentifier(sf::Mouse::Button button)
+std::string buttonIdentifier(sf::Mouse::Button button)
 {
     static constexpr auto identifiers = std::array
     {

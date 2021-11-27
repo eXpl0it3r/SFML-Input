@@ -427,7 +427,7 @@ std::string keyIdentifier(sf::Keyboard::Key code)
         case sf::Keyboard::KeyCount: // So that all values are handled.
             throw std::runtime_error{ "invalid keyboard code" };
 
-        // No default case on purpose so that compilers can reports unhandled values.
+        // No default case on purpose so that compilers can report unhandled values.
     }
 
     throw std::runtime_error{ "invalid keyboard code" };

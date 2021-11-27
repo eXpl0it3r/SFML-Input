@@ -313,64 +313,310 @@ bool seemsStrange(const sf::Event::KeyEvent& keyEvent)
 
 std::string keyIdentifier(sf::Keyboard::Key code)
 {
-    static constexpr auto identifiers = std::array
-    {
-        "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O",
-        "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "Num0", "Num1",
-        "Num2", "Num3", "Num4", "Num5", "Num6", "Num7", "Num8", "Num9", "Escape",
-        "LControl", "LShift", "LAlt", "LSystem", "RControl", "RShift", "RAlt",
-        "RSystem", "Menu", "LBracket", "RBracket", "Semicolon", "Comma", "Period",
-        "Apostrophe", "Slash", "Backslash", "Tilde", "Equal", "Hyphen", "Space",
-        "Enter", "Backspace", "Tab", "PageUp", "PageDown", "End", "Home", "Insert",
-        "Delete", "Add", "Subtract", "Multiply", "Divide", "Left", "Right", "Up",
-        "Down", "Numpad0", "Numpad1", "Numpad2", "Numpad3", "Numpad4", "Numpad5",
-        "Numpad6", "Numpad7", "Numpad8", "Numpad9", "F1", "F2", "F3", "F4", "F5",
-        "F6", "F7", "F8", "F9", "F10", "F11", "F12", "F13", "F14", "F15", "Pause"
-         };
+    // Inspired by mantognini/SFML-Test-Events
 
-    return code == -1 ? "Unknown" : identifiers[code];
+    static_assert(sf::Keyboard::KeyCount == 101, "Number of SFML keys has changed. The switch statement must be updated.");
+
+    switch(code)
+    {
+        #define CASE(code) case sf::Keyboard::code: return #code
+        CASE(Unknown);
+        CASE(A);
+        CASE(B);
+        CASE(C);
+        CASE(D);
+        CASE(E);
+        CASE(F);
+        CASE(G);
+        CASE(H);
+        CASE(I);
+        CASE(J);
+        CASE(K);
+        CASE(L);
+        CASE(M);
+        CASE(N);
+        CASE(O);
+        CASE(P);
+        CASE(Q);
+        CASE(R);
+        CASE(S);
+        CASE(T);
+        CASE(U);
+        CASE(V);
+        CASE(W);
+        CASE(X);
+        CASE(Y);
+        CASE(Z);
+        CASE(Num0);
+        CASE(Num1);
+        CASE(Num2);
+        CASE(Num3);
+        CASE(Num4);
+        CASE(Num5);
+        CASE(Num6);
+        CASE(Num7);
+        CASE(Num8);
+        CASE(Num9);
+        CASE(Escape);
+        CASE(LControl);
+        CASE(LShift);
+        CASE(LAlt);
+        CASE(LSystem);
+        CASE(RControl);
+        CASE(RShift);
+        CASE(RAlt);
+        CASE(RSystem);
+        CASE(Menu);
+        CASE(LBracket);
+        CASE(RBracket);
+        CASE(Semicolon);
+        CASE(Comma);
+        CASE(Period);
+        CASE(Apostrophe);
+        CASE(Slash);
+        CASE(Backslash);
+        CASE(Tilde);
+        CASE(Equal);
+        CASE(Hyphen);
+        CASE(Space);
+        CASE(Enter);
+        CASE(Backspace);
+        CASE(Tab);
+        CASE(PageUp);
+        CASE(PageDown);
+        CASE(End);
+        CASE(Home);
+        CASE(Insert);
+        CASE(Delete);
+        CASE(Add);
+        CASE(Subtract);
+        CASE(Multiply);
+        CASE(Divide);
+        CASE(Left);
+        CASE(Right);
+        CASE(Up);
+        CASE(Down);
+        CASE(Numpad0);
+        CASE(Numpad1);
+        CASE(Numpad2);
+        CASE(Numpad3);
+        CASE(Numpad4);
+        CASE(Numpad5);
+        CASE(Numpad6);
+        CASE(Numpad7);
+        CASE(Numpad8);
+        CASE(Numpad9);
+        CASE(F1);
+        CASE(F2);
+        CASE(F3);
+        CASE(F4);
+        CASE(F5);
+        CASE(F6);
+        CASE(F7);
+        CASE(F8);
+        CASE(F9);
+        CASE(F10);
+        CASE(F11);
+        CASE(F12);
+        CASE(F13);
+        CASE(F14);
+        CASE(F15);
+        CASE(Pause);
+        #undef CASE
+
+        case sf::Keyboard::KeyCount: // So that all values are handled.
+            throw std::runtime_error{ "invalid keyboard code" };
+
+        // No default case on purpose so that compilers can reports unhandled values.
+    }
+
+    throw std::runtime_error{ "invalid keyboard code" };
 }
 
 std::string scancodeIdentifier(sf::Keyboard::Scancode scancode)
 {
-    static constexpr auto identifiers = std::array
-    {
-        "ScanA", "ScanB", "ScanC", "ScanD", "ScanE", "ScanF", "ScanG", "ScanH", "ScanI",
-        "ScanJ", "ScanK", "ScanL", "ScanM", "ScanN", "ScanO", "ScanP", "ScanQ",
-        "ScanR", "ScanS", "ScanT", "ScanU", "ScanV", "ScanW", "ScanX", "ScanY",
-        "ScanZ", "ScanNum1", "ScanNum2", "ScanNum3", "ScanNum4", "ScanNum5", "ScanNum6",
-        "ScanNum7", "ScanNum8", "ScanNum9", "ScanNum0", "ScanEnter", "ScanEscape",
-        "ScanBackspace", "ScanTab", "ScanSpace", "ScanHyphen", "ScanEqual", "ScanLBracket",
-        "ScanRBracket", "ScanBackslash", "ScanSemicolon", "ScanApostrophe", "ScanGrave",
-        "ScanComma", "ScanPeriod", "ScanSlash", "ScanF1", "ScanF2", "ScanF3", "ScanF4",
-        "ScanF5", "ScanF6", "ScanF7", "ScanF8", "ScanF9", "ScanF10", "ScanF11",
-        "ScanF12", "ScanF13", "ScanF14", "ScanF15", "ScanF16", "ScanF17", "ScanF18",
-        "ScanF19", "ScanF20", "ScanF21", "ScanF22", "ScanF23", "ScanF24", "ScanCapsLock",
-        "ScanPrintScreen", "ScanScrollLock", "ScanPause", "ScanInsert", "ScanHome",
-        "ScanPageUp", "ScanDelete", "ScanEnd", "ScanPageDown", "ScanRight", "ScanLeft",
-        "ScanDown", "ScanUp", "ScanNumLock", "ScanNumpadDivide", "ScanNumpadMultiply",
-        "ScanNumpadMinus", "ScanNumpadPlus", "ScanNumpadEqual", "ScanNumpadEnter",
-        "ScanNumpadDecimal", "ScanNumpad1", "ScanNumpad2", "ScanNumpad3", "ScanNumpad4",
-        "ScanNumpad5", "ScanNumpad6", "ScanNumpad7", "ScanNumpad8", "ScanNumpad9",
-        "ScanNumpad0", "ScanNonUsBackslash", "ScanApplication", "ScanExecute",
-        "ScanModeChange", "ScanHelp", "ScanMenu", "ScanSelect", "ScanRedo", "ScanUndo",
-        "ScanCut", "ScanCopy", "ScanPaste", "ScanVolumeMute", "ScanVolumeUp", "ScanVolumeDown",
-        "ScanMediaPlayPause", "ScanMediaStop", "ScanMediaNextTrack", "ScanMediaPreviousTrack",
-        "ScanLControl", "ScanLShift", "ScanLAlt", "ScanLSystem", "ScanRControl",
-        "ScanRShift", "ScanRAlt", "ScanRSystem", "ScanBack", "ScanForward", "ScanRefresh",
-        "ScanStop", "ScanSearch", "ScanFavorites", "ScanHomePage", "ScanLaunchApplication1",
-        "ScanLaunchApplication2", "ScanLaunchMail", "ScanLaunchMediaSelect"
-     };
+    // Same design as the keyIdentifier function
 
-    return scancode == -1 ? "ScanUnknown" : identifiers[scancode];
+    static_assert(sf::Keyboard::ScancodeCount == 146, "Number of SFML scancodes has changed. The switch statement must be updated.");
+
+    switch(scancode)
+    {
+        #define CASE(scancode) case sf::Keyboard::scancode: return #scancode
+        CASE(ScanUnknown);
+        CASE(ScanA);
+        CASE(ScanB);
+        CASE(ScanC);
+        CASE(ScanD);
+        CASE(ScanE);
+        CASE(ScanF);
+        CASE(ScanG);
+        CASE(ScanH);
+        CASE(ScanI);
+        CASE(ScanJ);
+        CASE(ScanK);
+        CASE(ScanL);
+        CASE(ScanM);
+        CASE(ScanN);
+        CASE(ScanO);
+        CASE(ScanP);
+        CASE(ScanQ);
+        CASE(ScanR);
+        CASE(ScanS);
+        CASE(ScanT);
+        CASE(ScanU);
+        CASE(ScanV);
+        CASE(ScanW);
+        CASE(ScanX);
+        CASE(ScanY);
+        CASE(ScanZ);
+        CASE(ScanNum1);
+        CASE(ScanNum2);
+        CASE(ScanNum3);
+        CASE(ScanNum4);
+        CASE(ScanNum5);
+        CASE(ScanNum6);
+        CASE(ScanNum7);
+        CASE(ScanNum8);
+        CASE(ScanNum9);
+        CASE(ScanNum0);
+        CASE(ScanEnter);
+        CASE(ScanEscape);
+        CASE(ScanBackspace);
+        CASE(ScanTab);
+        CASE(ScanSpace);
+        CASE(ScanHyphen);
+        CASE(ScanEqual);
+        CASE(ScanLBracket);
+        CASE(ScanRBracket);
+        CASE(ScanBackslash);
+        CASE(ScanSemicolon);
+        CASE(ScanApostrophe);
+        CASE(ScanGrave);
+        CASE(ScanComma);
+        CASE(ScanPeriod);
+        CASE(ScanSlash);
+        CASE(ScanF1);
+        CASE(ScanF2);
+        CASE(ScanF3);
+        CASE(ScanF4);
+        CASE(ScanF5);
+        CASE(ScanF6);
+        CASE(ScanF7);
+        CASE(ScanF8);
+        CASE(ScanF9);
+        CASE(ScanF10);
+        CASE(ScanF11);
+        CASE(ScanF12);
+        CASE(ScanF13);
+        CASE(ScanF14);
+        CASE(ScanF15);
+        CASE(ScanF16);
+        CASE(ScanF17);
+        CASE(ScanF18);
+        CASE(ScanF19);
+        CASE(ScanF20);
+        CASE(ScanF21);
+        CASE(ScanF22);
+        CASE(ScanF23);
+        CASE(ScanF24);
+        CASE(ScanCapsLock);
+        CASE(ScanPrintScreen);
+        CASE(ScanScrollLock);
+        CASE(ScanPause);
+        CASE(ScanInsert);
+        CASE(ScanHome);
+        CASE(ScanPageUp);
+        CASE(ScanDelete);
+        CASE(ScanEnd);
+        CASE(ScanPageDown);
+        CASE(ScanRight);
+        CASE(ScanLeft);
+        CASE(ScanDown);
+        CASE(ScanUp);
+        CASE(ScanNumLock);
+        CASE(ScanNumpadDivide);
+        CASE(ScanNumpadMultiply);
+        CASE(ScanNumpadMinus);
+        CASE(ScanNumpadPlus);
+        CASE(ScanNumpadEqual);
+        CASE(ScanNumpadEnter);
+        CASE(ScanNumpadDecimal);
+        CASE(ScanNumpad1);
+        CASE(ScanNumpad2);
+        CASE(ScanNumpad3);
+        CASE(ScanNumpad4);
+        CASE(ScanNumpad5);
+        CASE(ScanNumpad6);
+        CASE(ScanNumpad7);
+        CASE(ScanNumpad8);
+        CASE(ScanNumpad9);
+        CASE(ScanNumpad0);
+        CASE(ScanNonUsBackslash);
+        CASE(ScanApplication);
+        CASE(ScanExecute);
+        CASE(ScanModeChange);
+        CASE(ScanHelp);
+        CASE(ScanMenu);
+        CASE(ScanSelect);
+        CASE(ScanRedo);
+        CASE(ScanUndo);
+        CASE(ScanCut);
+        CASE(ScanCopy);
+        CASE(ScanPaste);
+        CASE(ScanVolumeMute);
+        CASE(ScanVolumeUp);
+        CASE(ScanVolumeDown);
+        CASE(ScanMediaPlayPause);
+        CASE(ScanMediaStop);
+        CASE(ScanMediaNextTrack);
+        CASE(ScanMediaPreviousTrack);
+        CASE(ScanLControl);
+        CASE(ScanLShift);
+        CASE(ScanLAlt);
+        CASE(ScanLSystem);
+        CASE(ScanRControl);
+        CASE(ScanRShift);
+        CASE(ScanRAlt);
+        CASE(ScanRSystem);
+        CASE(ScanBack);
+        CASE(ScanForward);
+        CASE(ScanRefresh);
+        CASE(ScanStop);
+        CASE(ScanSearch);
+        CASE(ScanFavorites);
+        CASE(ScanHomePage);
+        CASE(ScanLaunchApplication1);
+        CASE(ScanLaunchApplication2);
+        CASE(ScanLaunchMail);
+        CASE(ScanLaunchMediaSelect);
+        #undef CASE
+
+        case sf::Keyboard::ScancodeCount:
+            throw std::runtime_error{ "invalid keyboard scancode" };
+    }
+
+    throw std::runtime_error{ "invalid keyboard scancode" };
 }
 
 std::string buttonIdentifier(sf::Mouse::Button button)
 {
-    static constexpr auto identifiers = std::array
-    {
-        "Left", "Right", "Middle", "XButton1", "XButton2"
-    };
+    // Same design as the keyIdentifier function
 
-    return identifiers[button];
+    static_assert(sf::Mouse::ButtonCount == 5, "Number of SFML mouse buttons has changed. The switch statement must be updated.");
+
+    switch(button)
+    {
+        #define CASE(button) case sf::Mouse::button: return #button
+        CASE(Left);
+        CASE(Right);
+        CASE(Middle);
+        CASE(XButton1);
+        CASE(XButton2);
+        #undef CASE
+
+        case sf::Mouse::ButtonCount:
+            throw std::runtime_error{ "invalid mouse button" };
+    }
+
+    throw std::runtime_error{ "invalid mouse button" };
 }

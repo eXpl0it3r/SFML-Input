@@ -20,6 +20,25 @@ std::string keyIdentifier(sf::Keyboard::Key code);
 std::string scancodeIdentifier(sf::Keyboard::Scancode scancode);
 std::string buttonIdentifier(sf::Mouse::Button button);
 
+template <typename Enum, typename Function>
+void forEachEnum(Enum begin, Enum end, Function function)
+{
+    for (int i = begin; i < end; ++i)
+        function(static_cast<Enum>(i));
+}
+
+template <typename Function>
+void forEachKey(Function function)
+{
+    forEachEnum(static_cast<sf::Keyboard::Key>(0), sf::Keyboard::KeyCount, function);
+}
+
+template <typename Function>
+void forEachScancode(Function function)
+{
+    forEachEnum(static_cast<sf::Keyboard::Scancode>(0), sf::Keyboard::ScancodeCount, function);
+}
+
 int main(int argc, char* argv[])
 {
     // Select UTF-8 output if the program was launched with an argument
@@ -28,10 +47,10 @@ int main(int argc, char* argv[])
     auto window = sf::RenderWindow{ {1920, 1080}, "SFML Input Test" };
     window.setFramerateLimit(15);
 
-    for (auto i = 0; i < sf::Keyboard::ScancodeCount; ++i)
+    forEachScancode([encode](auto scancode)
     {
-        std::cout << i << ":\t" << encode(sf::Keyboard::getDescription(static_cast<sf::Keyboard::Scancode>(i))) << '\n';
-    }
+        std::cout << static_cast<int>(scancode) << ":\t" << encode(sf::Keyboard::getDescription(scancode)) << '\n';
+    });
 
     std::cout << '\n';
 
@@ -148,48 +167,57 @@ int main(int argc, char* argv[])
             }
         }
 
-        for (auto i = 0u; i < sf::Keyboard::KeyCount; ++i)
+        forEachKey([&keys](auto key)
         {
-            keys[i] = sf::Keyboard::isKeyPressed(static_cast<sf::Keyboard::Key>(i));
-        }
+            keys[static_cast<unsigned>(key)] = sf::Keyboard::isKeyPressed(key);
+        });
 
         {
-            constexpr auto keyBounds = std::array<unsigned, 3>{0, sf::Keyboard::Apostrophe, sf::Keyboard::KeyCount};
+            constexpr auto keyBounds = std::array
+            {
+                static_cast<sf::Keyboard::Key>(0),
+                sf::Keyboard::Apostrophe,
+                sf::Keyboard::KeyCount
+            };
+
             auto text = sf::String{ "IsKeyPressed sf::Keyboard::Key" };
             for (auto b = 0u; b < keyBounds.size() - 1; ++b)
             {
                 text += "\n\nCode / Description / Delocalized / Pressed\n";
-                for (auto i = keyBounds[b]; i < keyBounds[b + 1]; ++i)
+                forEachEnum(keyBounds[b], keyBounds[b + 1], [&keys, &text](auto key)
                 {
-                    auto code = static_cast<sf::Keyboard::Key>(i);
-                    auto keyPressed = keys[i];
-
-                    text += keyDescription(code, keyPressed);
-                }
+                    auto keyPressed = keys[static_cast<unsigned>(key)];
+                    text += keyDescription(key, keyPressed);
+                });
 
                 keyPressedCheckText[b].setString(text);
                 text.clear();
             }
         }
 
-        for (auto i = 0u; i < sf::Keyboard::ScancodeCount; ++i)
+        forEachScancode([&scancodeKeys](auto scancode)
         {
-            scancodeKeys[i] = sf::Keyboard::isKeyPressed(static_cast<sf::Keyboard::Scancode>(i));
-        }
+            scancodeKeys[static_cast<unsigned>(scancode)] = sf::Keyboard::isKeyPressed(scancode);
+        });
 
         {
-            constexpr auto scancodeBounds = std::array<unsigned, 4>{0, sf::Keyboard::ScanComma, sf::Keyboard::ScanNumpad1, sf::Keyboard::ScancodeCount};
+            constexpr auto scancodeBounds = std::array
+            {
+                static_cast<sf::Keyboard::Scancode>(0),
+                sf::Keyboard::ScanComma,
+                sf::Keyboard::ScanNumpad1,
+                sf::Keyboard::ScancodeCount
+            };
+
             auto text = sf::String{ "IsKeyPressed sf::Keyboard::Scancode" };
             for (auto b = 0u; b < scancodeBounds.size() - 1; ++b)
             {
                 text += "\n\nScanCode / Description / Localized / Pressed\n";
-                for (auto i = scancodeBounds[b]; i < scancodeBounds[b + 1]; ++i)
+                forEachEnum(scancodeBounds[b], scancodeBounds[b + 1], [&scancodeKeys, &text](auto scancode)
                 {
-                    auto scancode = static_cast<sf::Keyboard::Scancode>(i);
-                    auto scancodeKeyPressed = scancodeKeys[i];
-
+                    auto scancodeKeyPressed = scancodeKeys[static_cast<unsigned>(scancode)];
                     text += scancodeDescription(scancode, scancodeKeyPressed);
-                }
+                });
 
                 keyPressedScancodeCheckText[b].setString(text);
                 text.clear();
@@ -198,13 +226,11 @@ int main(int argc, char* argv[])
 
         {
             auto text = sf::String{ "IsButtonPressed sf::Mouse::Button\n\n" };
-            for (auto i = 0u; i < sf::Mouse::ButtonCount; ++i)
+            forEachEnum(static_cast<sf::Mouse::Button>(0), sf::Mouse::ButtonCount, [&text](auto button)
             {
-                auto button = static_cast<sf::Mouse::Button>(i);
                 auto buttonPressed = sf::Mouse::isButtonPressed(button);
-
                 text += buttonDescription(button, buttonPressed);
-            }
+            });
 
             mouseButtonPressedCheckText.setString(text);
         }

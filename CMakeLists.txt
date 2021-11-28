@@ -23,4 +23,4 @@ endif()
 target_link_libraries(SFML-Input sfml-graphics sfml-audio)
 
 install(TARGETS SFML-Input DESTINATION .)
-install(FILES "Tuffy.ttf" "error_005.ogg" "mouseclick1.ogg" "mouserelease1.ogg" DESTINATION .)
+install(DIRECTORY resources DESTINATION .)

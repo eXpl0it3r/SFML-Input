@@ -1,4 +1,5 @@
 #include <array>
+#include <filesystem>
 #include <iostream>
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
@@ -34,10 +35,12 @@ int main(int argc, char* argv[])
 
     std::cout << '\n';
 
+    const auto resources_path = std::filesystem::path{ "resources" };
+
     sf::SoundBuffer errorSoundBuffer, pressedSoundBuffer, releasedSoundBuffer;
-    if (!errorSoundBuffer.loadFromFile("error_005.ogg") ||
-        !pressedSoundBuffer.loadFromFile("mouseclick1.ogg") ||
-        !releasedSoundBuffer.loadFromFile("mouserelease1.ogg"))
+    if (!errorSoundBuffer.loadFromFile((resources_path / "error_005.ogg").string()) ||
+        !pressedSoundBuffer.loadFromFile((resources_path / "mouseclick1.ogg").string()) ||
+        !releasedSoundBuffer.loadFromFile((resources_path / "mouserelease1.ogg").string()))
     {
         std::cerr << "Failed to load sound" << std::endl;
         return 1;
@@ -48,7 +51,7 @@ int main(int argc, char* argv[])
          releasedSound = sf::Sound{ releasedSoundBuffer };
 
     auto font = sf::Font{};
-    if (!font.loadFromFile("Tuffy.ttf"))
+    if (!font.loadFromFile((resources_path / "Tuffy.ttf").string()))
     {
         std::cerr << "Failed to load font" << std::endl;
         return 1;

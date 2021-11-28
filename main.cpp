@@ -1,6 +1,7 @@
 #include <array>
 #include <filesystem>
 #include <iostream>
+#include <iomanip>
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 
@@ -19,6 +20,9 @@ bool seemsStrange(const sf::Event::KeyEvent& keyEvent);
 std::string keyIdentifier(sf::Keyboard::Key code);
 std::string scancodeIdentifier(sf::Keyboard::Scancode scancode);
 std::string buttonIdentifier(sf::Mouse::Button button);
+
+std::ostream& operator<<(std::ostream& os, sf::Keyboard::Key code);
+std::ostream& operator<<(std::ostream& os, sf::Keyboard::Scancode scancode);
 
 template <typename Enum, typename Function>
 void forEachEnum(Enum begin, Enum end, Function function)
@@ -47,11 +51,65 @@ int main(int argc, char* argv[])
     auto window = sf::RenderWindow{ {1920, 1080}, "SFML Input Test" };
     window.setFramerateLimit(15);
 
+    std::cout << "\tScancode descriptions\n\n";
     forEachScancode([encode](auto scancode)
     {
-        std::cout << static_cast<int>(scancode) << ":\t" << encode(sf::Keyboard::getDescription(scancode)) << '\n';
+        std::cout << std::right << std::setw(3) << static_cast<int>(scancode) << ' '
+                  << std::left  << std::setw(22) << scancode << ' '
+                  << encode(sf::Keyboard::getDescription(scancode)) << '\n';
     });
+    std::cout << '\n';
 
+    std::cout << "\tKeys for which delocalize(key) == ScanUnknown\n\n";
+    forEachKey([](auto key)
+    {
+        if(auto scancode = sf::Keyboard::delocalize(key); scancode == sf::Keyboard::ScanUnknown)
+            std::cout << std::setw(10) << key << " -> " << scancode << '\n';
+    });
+    std::cout << '\n';
+
+    std::cout << "\tOther keys for which localize(delocalize(key)) == Unknown\n\n";
+    forEachKey([](auto key)
+    {
+        if(auto scancode = sf::Keyboard::delocalize(key); scancode != sf::Keyboard::ScanUnknown)
+            if(auto key2 = sf::Keyboard::localize(scancode); key2 == sf::Keyboard::Unknown)
+                std::cout << std::setw(10) << key << " -> " << std::setw(22) << scancode << " -> " << key2 << '\n';
+    });
+    std::cout << '\n';
+
+    std::cout << "\tOther keys for which localize(delocalize(key)) != key\n\n";
+    forEachKey([](auto key)
+    {
+        if(auto scancode = sf::Keyboard::delocalize(key); scancode != sf::Keyboard::ScanUnknown)
+            if(auto key2 = sf::Keyboard::localize(scancode); key2 != sf::Keyboard::Unknown && key2 != key)
+                std::cout << std::setw(10) << key << " -> " << std::setw(22) << scancode << " -> " << key2 << '\n';
+    });
+    std::cout << '\n';
+
+    std::cout << "\tScancodes for which localize(scancode) == Unknown\n\n";
+    forEachScancode([](auto scancode)
+    {
+        if(auto key = sf::Keyboard::localize(scancode); key == sf::Keyboard::Unknown)
+            std::cout << std::setw(22) << scancode << " -> " << key << '\n';
+    });
+    std::cout << '\n';
+
+    std::cout << "\tOther scancodes for which delocalize(localize(scancode)) == ScanUnknown\n\n";
+    forEachScancode([](auto scancode)
+    {
+        if(auto key = sf::Keyboard::localize(scancode); key != sf::Keyboard::Unknown)
+            if(auto scancode2 = sf::Keyboard::delocalize(key); scancode2 == sf::Keyboard::ScanUnknown)
+                std::cout << std::setw(22) << scancode << " -> " << std::setw(10) << key << " -> " << scancode2 << '\n';
+    });
+    std::cout << '\n';
+
+    std::cout << "\tOther scancodes for which delocalize(localize(scancode)) != scancode\n\n";
+    forEachScancode([](auto scancode)
+    {
+        if(auto key = sf::Keyboard::localize(scancode); key != sf::Keyboard::Unknown)
+            if(auto scancode2 = sf::Keyboard::delocalize(key); scancode2 != sf::Keyboard::ScanUnknown && scancode2 != scancode)
+                std::cout << std::setw(22) << scancode << " -> " << std::setw(10) << key << " -> " << scancode2 << '\n';
+    });
     std::cout << '\n';
 
     const auto resources_path = std::filesystem::path{ "resources" };
@@ -658,4 +716,14 @@ std::string buttonIdentifier(sf::Mouse::Button button)
     }
 
     throw std::runtime_error{ "invalid mouse button" };
+}
+
+std::ostream& operator<<(std::ostream& os, sf::Keyboard::Key code)
+{
+    return os << keyIdentifier(code);
+}
+
+std::ostream& operator<<(std::ostream& os, sf::Keyboard::Scancode scancode)
+{
+    return os << scancodeIdentifier(scancode);
 }

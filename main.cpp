@@ -1,5 +1,6 @@
 #include <array>
 #include <filesystem>
+#include <fstream>
 #include <iostream>
 #include <iomanip>
 #include <SFML/Graphics.hpp>
@@ -60,6 +61,7 @@ int main(int argc, char* argv[])
     });
     std::cout << '\n';
 
+    // Output information about localize and delocalize
     std::cout << "\tKeys for which delocalize(key) == ScanUnknown\n\n";
     forEachKey([](auto key)
     {
@@ -111,6 +113,59 @@ int main(int argc, char* argv[])
                 std::cout << std::setw(22) << scancode << " -> " << std::setw(10) << key << " -> " << scancode2 << '\n';
     });
     std::cout << '\n';
+
+    // Generate dot diagram about localize and delocalize
+    {
+        auto inDegreeScancode = std::array<int, sf::Keyboard::ScancodeCount>{};
+        forEachKey([&inDegreeScancode](auto key)
+        {
+            if(auto scancode = sf::Keyboard::delocalize(key); scancode != sf::Keyboard::ScanUnknown)
+                inDegreeScancode[scancode]++;
+        });
+
+        auto inDegreeKey = std::array<int, sf::Keyboard::KeyCount>{};
+        forEachScancode([&inDegreeKey](auto scancode)
+        {
+            if(auto key = sf::Keyboard::localize(scancode); key != sf::Keyboard::Unknown)
+                inDegreeKey[key]++;
+        });
+
+        auto diagram = std::ofstream("diagram.dot");
+        diagram << "digraph {\n"
+                << "rankdir = LR;\n"
+                << "node [shape=box]\n";
+
+        forEachKey([&diagram, &inDegreeScancode, &inDegreeKey](auto key)
+        {
+            if(auto scancode = sf::Keyboard::delocalize(key); scancode != sf::Keyboard::ScanUnknown)
+            {
+                auto key2 = sf::Keyboard::localize(scancode);
+                if(inDegreeScancode[scancode] != 1 || inDegreeKey[key] != 1 || key != key2)
+                    diagram << key << " -> " << scancode << '\n';
+            }
+            else
+            {
+                diagram << key << " {rank=min " << key << "}\n";
+            }
+        });
+
+        forEachScancode([&diagram, &inDegreeScancode, &inDegreeKey](auto scancode)
+        {
+            if(auto key = sf::Keyboard::localize(scancode); key != sf::Keyboard::Unknown)
+            {
+                auto scancode2 = sf::Keyboard::delocalize(key);
+                if(inDegreeKey[key] != 1 || inDegreeScancode[scancode] != 1 || scancode != scancode2)
+                    diagram << key << " -> " << scancode << " [dir=back]\n";
+            }
+            else
+            {
+                // Commented to get a small graph because a lot of scancodes are mapped to Unknown.
+                //diagram << scancode << " {rank=max " << scancode << "}\n";
+            }
+        });
+
+        diagram << "}\n";
+    }
 
     const auto resources_path = std::filesystem::path{ "resources" };
 

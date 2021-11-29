@@ -6,6 +6,22 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 
+constexpr auto help =
+"  -v, --verbose   Show more information\n"
+"  -d, --dot       Generate dot diagram about localize and delocalize functions\n"
+"  -u, --utf8      Encode console output as UTF-8 instead of ANSI\n"
+"  -h, --help      Show help and exit";
+
+struct Arguments
+{
+    Arguments(int argc, char* argv[]);
+
+    bool verbose = false;
+    bool generateDiagram = false;
+    bool utf8 = false;
+    bool help = false;
+};
+
 std::string encodeStringToAnsi(const sf::String& string);
 std::string encodeStringToUtf8(const sf::String& string);
 
@@ -46,8 +62,16 @@ void forEachScancode(Function function)
 
 int main(int argc, char* argv[])
 {
-    // Select UTF-8 output if the program was launched with an argument
-    const auto encode = argc > 1 ? encodeStringToUtf8 : encodeStringToAnsi;
+    const auto args = Arguments{ argc, argv };
+    if(args.help)
+    {
+        std::cout << "Usage: " << argv[0] << " [OPTION]...\n\n"
+                  << help << '\n';
+
+        return 0;
+    }
+
+    const auto encode = args.utf8 ? encodeStringToUtf8 : encodeStringToAnsi;
 
     auto window = sf::RenderWindow{ {1920, 1080}, "SFML Input Test" };
     window.setFramerateLimit(15);
@@ -62,59 +86,63 @@ int main(int argc, char* argv[])
     std::cout << '\n';
 
     // Output information about localize and delocalize
-    std::cout << "\tKeys for which delocalize(key) == ScanUnknown\n\n";
-    forEachKey([](auto key)
+    if(args.verbose)
     {
-        if(auto scancode = sf::Keyboard::delocalize(key); scancode == sf::Keyboard::ScanUnknown)
-            std::cout << std::setw(10) << key << " -> " << scancode << '\n';
-    });
-    std::cout << '\n';
+        std::cout << "\tKeys for which delocalize(key) == ScanUnknown\n\n";
+        forEachKey([](auto key)
+        {
+            if(auto scancode = sf::Keyboard::delocalize(key); scancode == sf::Keyboard::ScanUnknown)
+                std::cout << std::setw(10) << key << " -> " << scancode << '\n';
+        });
+        std::cout << '\n';
 
-    std::cout << "\tOther keys for which localize(delocalize(key)) == Unknown\n\n";
-    forEachKey([](auto key)
-    {
-        if(auto scancode = sf::Keyboard::delocalize(key); scancode != sf::Keyboard::ScanUnknown)
-            if(auto key2 = sf::Keyboard::localize(scancode); key2 == sf::Keyboard::Unknown)
-                std::cout << std::setw(10) << key << " -> " << std::setw(22) << scancode << " -> " << key2 << '\n';
-    });
-    std::cout << '\n';
+        std::cout << "\tOther keys for which localize(delocalize(key)) == Unknown\n\n";
+        forEachKey([](auto key)
+        {
+            if(auto scancode = sf::Keyboard::delocalize(key); scancode != sf::Keyboard::ScanUnknown)
+                if(auto key2 = sf::Keyboard::localize(scancode); key2 == sf::Keyboard::Unknown)
+                    std::cout << std::setw(10) << key << " -> " << std::setw(22) << scancode << " -> " << key2 << '\n';
+        });
+        std::cout << '\n';
 
-    std::cout << "\tOther keys for which localize(delocalize(key)) != key\n\n";
-    forEachKey([](auto key)
-    {
-        if(auto scancode = sf::Keyboard::delocalize(key); scancode != sf::Keyboard::ScanUnknown)
-            if(auto key2 = sf::Keyboard::localize(scancode); key2 != sf::Keyboard::Unknown && key2 != key)
-                std::cout << std::setw(10) << key << " -> " << std::setw(22) << scancode << " -> " << key2 << '\n';
-    });
-    std::cout << '\n';
+        std::cout << "\tOther keys for which localize(delocalize(key)) != key\n\n";
+        forEachKey([](auto key)
+        {
+            if(auto scancode = sf::Keyboard::delocalize(key); scancode != sf::Keyboard::ScanUnknown)
+                if(auto key2 = sf::Keyboard::localize(scancode); key2 != sf::Keyboard::Unknown && key2 != key)
+                    std::cout << std::setw(10) << key << " -> " << std::setw(22) << scancode << " -> " << key2 << '\n';
+        });
+        std::cout << '\n';
 
-    std::cout << "\tScancodes for which localize(scancode) == Unknown\n\n";
-    forEachScancode([](auto scancode)
-    {
-        if(auto key = sf::Keyboard::localize(scancode); key == sf::Keyboard::Unknown)
-            std::cout << std::setw(22) << scancode << " -> " << key << '\n';
-    });
-    std::cout << '\n';
+        std::cout << "\tScancodes for which localize(scancode) == Unknown\n\n";
+        forEachScancode([](auto scancode)
+        {
+            if(auto key = sf::Keyboard::localize(scancode); key == sf::Keyboard::Unknown)
+                std::cout << std::setw(22) << scancode << " -> " << key << '\n';
+        });
+        std::cout << '\n';
 
-    std::cout << "\tOther scancodes for which delocalize(localize(scancode)) == ScanUnknown\n\n";
-    forEachScancode([](auto scancode)
-    {
-        if(auto key = sf::Keyboard::localize(scancode); key != sf::Keyboard::Unknown)
-            if(auto scancode2 = sf::Keyboard::delocalize(key); scancode2 == sf::Keyboard::ScanUnknown)
-                std::cout << std::setw(22) << scancode << " -> " << std::setw(10) << key << " -> " << scancode2 << '\n';
-    });
-    std::cout << '\n';
+        std::cout << "\tOther scancodes for which delocalize(localize(scancode)) == ScanUnknown\n\n";
+        forEachScancode([](auto scancode)
+        {
+            if(auto key = sf::Keyboard::localize(scancode); key != sf::Keyboard::Unknown)
+                if(auto scancode2 = sf::Keyboard::delocalize(key); scancode2 == sf::Keyboard::ScanUnknown)
+                    std::cout << std::setw(22) << scancode << " -> " << std::setw(10) << key << " -> " << scancode2 << '\n';
+        });
+        std::cout << '\n';
 
-    std::cout << "\tOther scancodes for which delocalize(localize(scancode)) != scancode\n\n";
-    forEachScancode([](auto scancode)
-    {
-        if(auto key = sf::Keyboard::localize(scancode); key != sf::Keyboard::Unknown)
-            if(auto scancode2 = sf::Keyboard::delocalize(key); scancode2 != sf::Keyboard::ScanUnknown && scancode2 != scancode)
-                std::cout << std::setw(22) << scancode << " -> " << std::setw(10) << key << " -> " << scancode2 << '\n';
-    });
-    std::cout << '\n';
+        std::cout << "\tOther scancodes for which delocalize(localize(scancode)) != scancode\n\n";
+        forEachScancode([](auto scancode)
+        {
+            if(auto key = sf::Keyboard::localize(scancode); key != sf::Keyboard::Unknown)
+                if(auto scancode2 = sf::Keyboard::delocalize(key); scancode2 != sf::Keyboard::ScanUnknown && scancode2 != scancode)
+                    std::cout << std::setw(22) << scancode << " -> " << std::setw(10) << key << " -> " << scancode2 << '\n';
+        });
+        std::cout << '\n';
+    }
 
     // Generate dot diagram about localize and delocalize
+    if(args.generateDiagram)
     {
         auto inDegreeScancode = std::array<int, sf::Keyboard::ScancodeCount>{};
         forEachKey([&inDegreeScancode](auto key)
@@ -167,6 +195,7 @@ int main(int argc, char* argv[])
         diagram << "}\n";
     }
 
+    // Load resources, setup sf::Sound and sf::Text instances
     const auto resources_path = std::filesystem::path{ "resources" };
 
     sf::SoundBuffer errorSoundBuffer, pressedSoundBuffer, releasedSoundBuffer;
@@ -228,6 +257,7 @@ int main(int argc, char* argv[])
     auto keys = std::array<bool, sf::Keyboard::KeyCount>{};
     auto scancodeKeys = std::array<bool, sf::Keyboard::ScancodeCount>{};
 
+    // Main loop
     while (window.isOpen())
     {
         for (auto event = sf::Event{}; window.pollEvent(event);)
@@ -363,6 +393,28 @@ int main(int argc, char* argv[])
         window.draw(mouseButtonPressedCheckText);
 
         window.display();
+    }
+}
+
+Arguments::Arguments(int argc, char* argv[])
+{
+    for (int i = 1; i < argc; i++)
+    {
+        const auto arg = std::string{ argv[i] };
+
+        if (arg == "-h" || arg == "--help")
+            help = true;
+        else if (arg == "-v" || arg == "--verbose")
+            verbose = true;
+        else if (arg == "-d" || arg == "--dot")
+            generateDiagram = true;
+        else if (arg == "-u" || arg == "--utf8")
+            utf8 = true;
+        else
+        {
+            help = true;
+            std::cout << "Error: unknown argument " << arg << '\n';
+        }
     }
 }
 

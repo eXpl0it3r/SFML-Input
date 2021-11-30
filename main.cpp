@@ -223,7 +223,7 @@ int main(int argc, char* argv[])
         constexpr auto textSize = 14u, space = 4u;
         constexpr auto spacingFactor = static_cast<float>(textSize + space) / textSize;
 
-        auto text = sf::Text{ "Key Pressed\n", font, textSize };
+        auto text = sf::Text{ string, font, textSize };
         text.setLineSpacing(spacingFactor);
 
         return text;

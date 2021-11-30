@@ -41,24 +41,37 @@ std::string buttonIdentifier(sf::Mouse::Button button);
 std::ostream& operator<<(std::ostream& os, sf::Keyboard::Key code);
 std::ostream& operator<<(std::ostream& os, sf::Keyboard::Scancode scancode);
 
-template <typename Enum, typename Function>
-void forEachEnum(Enum begin, Enum end, Function function)
+template <typename Enum>
+class EnumRange
 {
-    for (int i = begin; i < end; ++i)
-        function(static_cast<Enum>(i));
-}
+public:
+    class Iterator
+    {
+    public:
+        constexpr explicit Iterator(Enum value) : m_value{ value } {}
 
-template <typename Function>
-void forEachKey(Function function)
-{
-    forEachEnum(static_cast<sf::Keyboard::Key>(0), sf::Keyboard::KeyCount, function);
-}
+        constexpr Enum operator*() const { return static_cast<Enum>(m_value); }
+        constexpr Iterator& operator++() { ++m_value; return *this; }
+        constexpr bool operator!=(const Iterator& other) const { return *(*this) != *other; }
 
-template <typename Function>
-void forEachScancode(Function function)
-{
-    forEachEnum(static_cast<sf::Keyboard::Scancode>(0), sf::Keyboard::ScancodeCount, function);
-}
+    private:
+        typename std::underlying_type_t<Enum> m_value;
+    };
+
+    constexpr explicit EnumRange(Enum begin, Enum end)
+    : m_begin{ begin }, m_end{ end }
+    {}
+
+    constexpr Iterator begin() const { return Iterator{ m_begin }; }
+    constexpr Iterator end()   const { return Iterator{ m_end }; }
+
+private:
+    const Enum m_begin, m_end;
+};
+
+constexpr auto keys      = EnumRange{ static_cast<sf::Keyboard::Key>(0), sf::Keyboard::KeyCount };
+constexpr auto scancodes = EnumRange{ static_cast<sf::Keyboard::Scancode>(0), sf::Keyboard::ScancodeCount };
+constexpr auto buttons   = EnumRange{ static_cast<sf::Mouse::Button>(0), sf::Mouse::ButtonCount };
 
 int main(int argc, char* argv[])
 {
@@ -77,67 +90,53 @@ int main(int argc, char* argv[])
     window.setFramerateLimit(15);
 
     std::cout << "\tScancode descriptions\n\n";
-    forEachScancode([encode](auto scancode)
-    {
+    for (auto scancode : scancodes)
         std::cout << std::right << std::setw(3) << static_cast<int>(scancode) << ' '
                   << std::left  << std::setw(22) << scancode << ' '
                   << encode(sf::Keyboard::getDescription(scancode)) << '\n';
-    });
     std::cout << '\n';
 
     // Output information about localize and delocalize
     if(args.verbose)
     {
         std::cout << "\tKeys for which delocalize(key) == ScanUnknown\n\n";
-        forEachKey([](auto key)
-        {
-            if(auto scancode = sf::Keyboard::delocalize(key); scancode == sf::Keyboard::ScanUnknown)
+        for (auto key : keys)
+            if (auto scancode = sf::Keyboard::delocalize(key); scancode == sf::Keyboard::ScanUnknown)
                 std::cout << std::setw(10) << key << " -> " << scancode << '\n';
-        });
         std::cout << '\n';
 
         std::cout << "\tOther keys for which localize(delocalize(key)) == Unknown\n\n";
-        forEachKey([](auto key)
-        {
-            if(auto scancode = sf::Keyboard::delocalize(key); scancode != sf::Keyboard::ScanUnknown)
-                if(auto key2 = sf::Keyboard::localize(scancode); key2 == sf::Keyboard::Unknown)
+        for (auto key : keys)
+            if (auto scancode = sf::Keyboard::delocalize(key); scancode != sf::Keyboard::ScanUnknown)
+                if (auto key2 = sf::Keyboard::localize(scancode); key2 == sf::Keyboard::Unknown)
                     std::cout << std::setw(10) << key << " -> " << std::setw(22) << scancode << " -> " << key2 << '\n';
-        });
         std::cout << '\n';
 
         std::cout << "\tOther keys for which localize(delocalize(key)) != key\n\n";
-        forEachKey([](auto key)
-        {
-            if(auto scancode = sf::Keyboard::delocalize(key); scancode != sf::Keyboard::ScanUnknown)
-                if(auto key2 = sf::Keyboard::localize(scancode); key2 != sf::Keyboard::Unknown && key2 != key)
+        for (auto key : keys)
+            if (auto scancode = sf::Keyboard::delocalize(key); scancode != sf::Keyboard::ScanUnknown)
+                if (auto key2 = sf::Keyboard::localize(scancode); key2 != sf::Keyboard::Unknown && key2 != key)
                     std::cout << std::setw(10) << key << " -> " << std::setw(22) << scancode << " -> " << key2 << '\n';
-        });
         std::cout << '\n';
 
         std::cout << "\tScancodes for which localize(scancode) == Unknown\n\n";
-        forEachScancode([](auto scancode)
-        {
-            if(auto key = sf::Keyboard::localize(scancode); key == sf::Keyboard::Unknown)
+        for (auto scancode : scancodes)
+            if (auto key = sf::Keyboard::localize(scancode); key == sf::Keyboard::Unknown)
                 std::cout << std::setw(22) << scancode << " -> " << key << '\n';
-        });
         std::cout << '\n';
 
         std::cout << "\tOther scancodes for which delocalize(localize(scancode)) == ScanUnknown\n\n";
-        forEachScancode([](auto scancode)
-        {
-            if(auto key = sf::Keyboard::localize(scancode); key != sf::Keyboard::Unknown)
-                if(auto scancode2 = sf::Keyboard::delocalize(key); scancode2 == sf::Keyboard::ScanUnknown)
+        for (auto scancode : scancodes)
+            if (auto key = sf::Keyboard::localize(scancode); key != sf::Keyboard::Unknown)
+                if (auto scancode2 = sf::Keyboard::delocalize(key); scancode2 == sf::Keyboard::ScanUnknown)
                     std::cout << std::setw(22) << scancode << " -> " << std::setw(10) << key << " -> " << scancode2 << '\n';
-        });
         std::cout << '\n';
 
         std::cout << "\tOther scancodes for which delocalize(localize(scancode)) != scancode\n\n";
-        forEachScancode([](auto scancode)
-        {
-            if(auto key = sf::Keyboard::localize(scancode); key != sf::Keyboard::Unknown)
-                if(auto scancode2 = sf::Keyboard::delocalize(key); scancode2 != sf::Keyboard::ScanUnknown && scancode2 != scancode)
+        for (auto scancode : scancodes)
+            if (auto key = sf::Keyboard::localize(scancode); key != sf::Keyboard::Unknown)
+                if (auto scancode2 = sf::Keyboard::delocalize(key); scancode2 != sf::Keyboard::ScanUnknown && scancode2 != scancode)
                     std::cout << std::setw(22) << scancode << " -> " << std::setw(10) << key << " -> " << scancode2 << '\n';
-        });
         std::cout << '\n';
     }
 
@@ -145,44 +144,37 @@ int main(int argc, char* argv[])
     if(args.generateDiagram)
     {
         auto inDegreeScancode = std::array<int, sf::Keyboard::ScancodeCount>{};
-        forEachKey([&inDegreeScancode](auto key)
-        {
-            if(auto scancode = sf::Keyboard::delocalize(key); scancode != sf::Keyboard::ScanUnknown)
+        for (auto key : keys)
+            if (auto scancode = sf::Keyboard::delocalize(key); scancode != sf::Keyboard::ScanUnknown)
                 inDegreeScancode[scancode]++;
-        });
 
         auto inDegreeKey = std::array<int, sf::Keyboard::KeyCount>{};
-        forEachScancode([&inDegreeKey](auto scancode)
-        {
-            if(auto key = sf::Keyboard::localize(scancode); key != sf::Keyboard::Unknown)
+        for (auto scancode : scancodes)
+            if (auto key = sf::Keyboard::localize(scancode); key != sf::Keyboard::Unknown)
                 inDegreeKey[key]++;
-        });
 
         auto diagram = std::ofstream("diagram.dot");
         diagram << "digraph {\n"
                 << "rankdir = LR;\n"
                 << "node [shape=box]\n";
 
-        forEachKey([&diagram, &inDegreeScancode, &inDegreeKey](auto key)
-        {
-            if(auto scancode = sf::Keyboard::delocalize(key); scancode != sf::Keyboard::ScanUnknown)
+        for (auto key : keys)
+            if (auto scancode = sf::Keyboard::delocalize(key); scancode != sf::Keyboard::ScanUnknown)
             {
                 auto key2 = sf::Keyboard::localize(scancode);
-                if(inDegreeScancode[scancode] != 1 || inDegreeKey[key] != 1 || key != key2)
+                if (inDegreeScancode[scancode] != 1 || inDegreeKey[key] != 1 || key != key2)
                     diagram << key << " -> " << scancode << '\n';
             }
             else
             {
                 diagram << key << " {rank=min " << key << "}\n";
             }
-        });
 
-        forEachScancode([&diagram, &inDegreeScancode, &inDegreeKey](auto scancode)
-        {
-            if(auto key = sf::Keyboard::localize(scancode); key != sf::Keyboard::Unknown)
+        for (auto scancode : scancodes)
+            if (auto key = sf::Keyboard::localize(scancode); key != sf::Keyboard::Unknown)
             {
                 auto scancode2 = sf::Keyboard::delocalize(key);
-                if(inDegreeKey[key] != 1 || inDegreeScancode[scancode] != 1 || scancode != scancode2)
+                if (inDegreeKey[key] != 1 || inDegreeScancode[scancode] != 1 || scancode != scancode2)
                     diagram << key << " -> " << scancode << " [dir=back]\n";
             }
             else
@@ -190,7 +182,6 @@ int main(int argc, char* argv[])
                 // Commented to get a small graph because a lot of scancodes are mapped to Unknown.
                 //diagram << scancode << " {rank=max " << scancode << "}\n";
             }
-        });
 
         diagram << "}\n";
     }
@@ -254,8 +245,8 @@ int main(int argc, char* argv[])
     auto mouseButtonPressedCheckText = makeText("IsButtonPressed\n");
     mouseButtonPressedCheckText.setPosition({ 0.f, 600.f });
 
-    auto keys = std::array<bool, sf::Keyboard::KeyCount>{};
-    auto scancodeKeys = std::array<bool, sf::Keyboard::ScancodeCount>{};
+    auto keyPressed = std::array<bool, sf::Keyboard::KeyCount>{};
+    auto scancodePressed = std::array<bool, sf::Keyboard::ScancodeCount>{};
 
     // Main loop
     while (window.isOpen())
@@ -310,10 +301,8 @@ int main(int argc, char* argv[])
             }
         }
 
-        forEachKey([&keys](auto key)
-        {
-            keys[static_cast<unsigned>(key)] = sf::Keyboard::isKeyPressed(key);
-        });
+        for (auto key : keys)
+            keyPressed[static_cast<unsigned>(key)] = sf::Keyboard::isKeyPressed(key);
 
         {
             constexpr auto keyBounds = std::array
@@ -327,21 +316,16 @@ int main(int argc, char* argv[])
             for (auto b = 0u; b < keyBounds.size() - 1; ++b)
             {
                 text += "\n\nCode / Description / Delocalized / Pressed\n";
-                forEachEnum(keyBounds[b], keyBounds[b + 1], [&keys, &text](auto key)
-                {
-                    auto keyPressed = keys[static_cast<unsigned>(key)];
-                    text += keyDescription(key, keyPressed);
-                });
+                for (auto key : EnumRange{ keyBounds[b], keyBounds[b + 1] })
+                    text += keyDescription(key, keyPressed[static_cast<unsigned>(key)]);
 
                 keyPressedCheckText[b].setString(text);
                 text.clear();
             }
         }
 
-        forEachScancode([&scancodeKeys](auto scancode)
-        {
-            scancodeKeys[static_cast<unsigned>(scancode)] = sf::Keyboard::isKeyPressed(scancode);
-        });
+        for (auto scancode : scancodes)
+            scancodePressed[static_cast<unsigned>(scancode)] = sf::Keyboard::isKeyPressed(scancode);
 
         {
             constexpr auto scancodeBounds = std::array
@@ -356,11 +340,8 @@ int main(int argc, char* argv[])
             for (auto b = 0u; b < scancodeBounds.size() - 1; ++b)
             {
                 text += "\n\nScanCode / Description / Localized / Pressed\n";
-                forEachEnum(scancodeBounds[b], scancodeBounds[b + 1], [&scancodeKeys, &text](auto scancode)
-                {
-                    auto scancodeKeyPressed = scancodeKeys[static_cast<unsigned>(scancode)];
-                    text += scancodeDescription(scancode, scancodeKeyPressed);
-                });
+                for (auto scancode : EnumRange{ scancodeBounds[b], scancodeBounds[b + 1] })
+                    text += scancodeDescription(scancode, scancodePressed[static_cast<unsigned>(scancode)]);
 
                 keyPressedScancodeCheckText[b].setString(text);
                 text.clear();
@@ -369,11 +350,8 @@ int main(int argc, char* argv[])
 
         {
             auto text = sf::String{ "IsButtonPressed sf::Mouse::Button\n\n" };
-            forEachEnum(static_cast<sf::Mouse::Button>(0), sf::Mouse::ButtonCount, [&text](auto button)
-            {
-                auto buttonPressed = sf::Mouse::isButtonPressed(button);
-                text += buttonDescription(button, buttonPressed);
-            });
+            for (auto button : buttons)
+                text += buttonDescription(button, sf::Mouse::isButtonPressed(button));
 
             mouseButtonPressedCheckText.setString(text);
         }

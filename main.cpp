@@ -155,8 +155,8 @@ int main(int argc, char* argv[])
 
         auto diagram = std::ofstream("diagram.dot");
         diagram << "digraph {\n"
-                << "rankdir = LR;\n"
-                << "node [shape=box]\n";
+                << "rankdir=LR\n"
+                << "node [shape=box fontname=monospace]\n";
 
         for (auto key : keys)
             if (auto scancode = sf::Keyboard::delocalize(key); scancode != sf::Keyboard::ScanUnknown)

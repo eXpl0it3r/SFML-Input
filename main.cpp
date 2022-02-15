@@ -248,6 +248,9 @@ int main(int argc, char* argv[])
     auto keyPressed = std::array<bool, sf::Keyboard::KeyCount>{};
     auto scancodePressed = std::array<bool, sf::Keyboard::ScancodeCount>{};
 
+    auto lastEventKey = sf::Keyboard::Unknown;
+    auto lastEventScancode = sf::Keyboard::ScanUnknown;
+
     // Main loop
     while (window.isOpen())
     {
@@ -264,6 +267,9 @@ int main(int argc, char* argv[])
                 keyPressedText.setString(text);
                 std::cout << encode(text);
 
+                lastEventKey = event.key.code;
+                lastEventScancode = event.key.scancode;
+
                 if(seemsStrange(event.key))
                     errorSound.play();
                 else
@@ -275,6 +281,9 @@ int main(int argc, char* argv[])
 
                 keyReleasedText.setString(text);
                 std::cout << encode(text);
+
+                lastEventKey = event.key.code;
+                lastEventScancode = event.key.scancode;
 
                 if(seemsStrange(event.key))
                     errorSound.play();
@@ -317,7 +326,11 @@ int main(int argc, char* argv[])
             {
                 text += "\n\nCode / Description / Delocalized / Pressed\n";
                 for (auto key : EnumRange{ keyBounds[b], keyBounds[b + 1] })
+                {
+                    if (key == lastEventKey)
+                        text += "*\t";
                     text += keyDescription(key, keyPressed[static_cast<unsigned>(key)]);
+                }
 
                 keyPressedCheckText[b].setString(text);
                 text.clear();
@@ -341,7 +354,11 @@ int main(int argc, char* argv[])
             {
                 text += "\n\nScanCode / Description / Localized / Pressed\n";
                 for (auto scancode : EnumRange{ scancodeBounds[b], scancodeBounds[b + 1] })
+                {
+                    if(scancode == lastEventScancode)
+                        text += "*\t";
                     text += scancodeDescription(scancode, scancodePressed[static_cast<unsigned>(scancode)]);
+                }
 
                 keyPressedScancodeCheckText[b].setString(text);
                 text.clear();

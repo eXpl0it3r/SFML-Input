@@ -70,7 +70,7 @@ private:
 };
 
 constexpr auto keys      = EnumRange{ static_cast<sf::Keyboard::Key>(0), sf::Keyboard::KeyCount };
-constexpr auto scancodes = EnumRange{ static_cast<sf::Keyboard::Scancode>(0), sf::Keyboard::ScancodeCount };
+constexpr auto scancodes = EnumRange{ static_cast<sf::Keyboard::Scancode>(0), sf::Keyboard::Scan::ScancodeCount };
 constexpr auto buttons   = EnumRange{ static_cast<sf::Mouse::Button>(0), sf::Mouse::ButtonCount };
 
 int main(int argc, char* argv[])
@@ -86,7 +86,7 @@ int main(int argc, char* argv[])
 
     const auto encode = args.utf8 ? encodeStringToUtf8 : encodeStringToAnsi;
 
-    auto window = sf::RenderWindow{ {1920, 1080}, "SFML Input Test" };
+    auto window = sf::RenderWindow{ {1920, 1200}, "SFML Input Test" };
     window.setFramerateLimit(15);
 
     std::cout << "\tScancode descriptions\n\n";
@@ -101,20 +101,20 @@ int main(int argc, char* argv[])
     {
         std::cout << "\tKeys for which delocalize(key) == ScanUnknown\n\n";
         for (auto key : keys)
-            if (auto scancode = sf::Keyboard::delocalize(key); scancode == sf::Keyboard::ScanUnknown)
+            if (auto scancode = sf::Keyboard::delocalize(key); scancode == sf::Keyboard::Scan::Unknown)
                 std::cout << std::setw(10) << key << " -> " << scancode << '\n';
         std::cout << '\n';
 
         std::cout << "\tOther keys for which localize(delocalize(key)) == Unknown\n\n";
         for (auto key : keys)
-            if (auto scancode = sf::Keyboard::delocalize(key); scancode != sf::Keyboard::ScanUnknown)
+            if (auto scancode = sf::Keyboard::delocalize(key); scancode != sf::Keyboard::Scan::Unknown)
                 if (auto key2 = sf::Keyboard::localize(scancode); key2 == sf::Keyboard::Unknown)
                     std::cout << std::setw(10) << key << " -> " << std::setw(22) << scancode << " -> " << key2 << '\n';
         std::cout << '\n';
 
         std::cout << "\tOther keys for which localize(delocalize(key)) != key\n\n";
         for (auto key : keys)
-            if (auto scancode = sf::Keyboard::delocalize(key); scancode != sf::Keyboard::ScanUnknown)
+            if (auto scancode = sf::Keyboard::delocalize(key); scancode != sf::Keyboard::Scan::Unknown)
                 if (auto key2 = sf::Keyboard::localize(scancode); key2 != sf::Keyboard::Unknown && key2 != key)
                     std::cout << std::setw(10) << key << " -> " << std::setw(22) << scancode << " -> " << key2 << '\n';
         std::cout << '\n';
@@ -128,14 +128,14 @@ int main(int argc, char* argv[])
         std::cout << "\tOther scancodes for which delocalize(localize(scancode)) == ScanUnknown\n\n";
         for (auto scancode : scancodes)
             if (auto key = sf::Keyboard::localize(scancode); key != sf::Keyboard::Unknown)
-                if (auto scancode2 = sf::Keyboard::delocalize(key); scancode2 == sf::Keyboard::ScanUnknown)
+                if (auto scancode2 = sf::Keyboard::delocalize(key); scancode2 == sf::Keyboard::Scan::Unknown)
                     std::cout << std::setw(22) << scancode << " -> " << std::setw(10) << key << " -> " << scancode2 << '\n';
         std::cout << '\n';
 
         std::cout << "\tOther scancodes for which delocalize(localize(scancode)) != scancode\n\n";
         for (auto scancode : scancodes)
             if (auto key = sf::Keyboard::localize(scancode); key != sf::Keyboard::Unknown)
-                if (auto scancode2 = sf::Keyboard::delocalize(key); scancode2 != sf::Keyboard::ScanUnknown && scancode2 != scancode)
+                if (auto scancode2 = sf::Keyboard::delocalize(key); scancode2 != sf::Keyboard::Scan::Unknown && scancode2 != scancode)
                     std::cout << std::setw(22) << scancode << " -> " << std::setw(10) << key << " -> " << scancode2 << '\n';
         std::cout << '\n';
     }
@@ -143,9 +143,9 @@ int main(int argc, char* argv[])
     // Generate dot diagram about localize and delocalize
     if(args.generateDiagram)
     {
-        auto inDegreeScancode = std::array<int, sf::Keyboard::ScancodeCount>{};
+        auto inDegreeScancode = std::array<int, sf::Keyboard::Scan::ScancodeCount>{};
         for (auto key : keys)
-            if (auto scancode = sf::Keyboard::delocalize(key); scancode != sf::Keyboard::ScanUnknown)
+            if (auto scancode = sf::Keyboard::delocalize(key); scancode != sf::Keyboard::Scan::Unknown)
                 inDegreeScancode[scancode]++;
 
         auto inDegreeKey = std::array<int, sf::Keyboard::KeyCount>{};
@@ -159,7 +159,7 @@ int main(int argc, char* argv[])
                 << "node [shape=box fontname=monospace]\n";
 
         for (auto key : keys)
-            if (auto scancode = sf::Keyboard::delocalize(key); scancode != sf::Keyboard::ScanUnknown)
+            if (auto scancode = sf::Keyboard::delocalize(key); scancode != sf::Keyboard::Scan::Unknown)
             {
                 auto key2 = sf::Keyboard::localize(scancode);
                 if (inDegreeScancode[scancode] != 1 || inDegreeKey[key] != 1 || key != key2)
@@ -246,10 +246,10 @@ int main(int argc, char* argv[])
     mouseButtonPressedCheckText.setPosition({ 0.f, 600.f });
 
     auto keyPressed = std::array<bool, sf::Keyboard::KeyCount>{};
-    auto scancodePressed = std::array<bool, sf::Keyboard::ScancodeCount>{};
+    auto scancodePressed = std::array<bool, sf::Keyboard::Scan::ScancodeCount>{};
 
     auto lastEventKey = sf::Keyboard::Unknown;
-    auto lastEventScancode = sf::Keyboard::ScanUnknown;
+    auto lastEventScancode = sf::Keyboard::Scan::Unknown;
 
     // Main loop
     while (window.isOpen())
@@ -344,9 +344,9 @@ int main(int argc, char* argv[])
             constexpr auto scancodeBounds = std::array
             {
                 static_cast<sf::Keyboard::Scancode>(0),
-                sf::Keyboard::ScanComma,
-                sf::Keyboard::ScanNumpad1,
-                sf::Keyboard::ScancodeCount
+                sf::Keyboard::Scan::Comma,
+                sf::Keyboard::Scan::Numpad1,
+                sf::Keyboard::Scan::ScancodeCount
             };
 
             auto text = sf::String{ "IsKeyPressed sf::Keyboard::Scancode" };
@@ -636,161 +636,161 @@ std::string scancodeIdentifier(sf::Keyboard::Scancode scancode)
 {
     // Same design as the keyIdentifier function
 
-    static_assert(sf::Keyboard::ScancodeCount == 146, "Number of SFML scancodes has changed. The switch statement must be updated.");
+    static_assert(sf::Keyboard::Scan::ScancodeCount == 146, "Number of SFML scancodes has changed. The switch statement must be updated.");
 
     switch(scancode)
     {
         #define CASE(scancode) case sf::Keyboard::scancode: return #scancode
-        CASE(ScanUnknown);
-        CASE(ScanA);
-        CASE(ScanB);
-        CASE(ScanC);
-        CASE(ScanD);
-        CASE(ScanE);
-        CASE(ScanF);
-        CASE(ScanG);
-        CASE(ScanH);
-        CASE(ScanI);
-        CASE(ScanJ);
-        CASE(ScanK);
-        CASE(ScanL);
-        CASE(ScanM);
-        CASE(ScanN);
-        CASE(ScanO);
-        CASE(ScanP);
-        CASE(ScanQ);
-        CASE(ScanR);
-        CASE(ScanS);
-        CASE(ScanT);
-        CASE(ScanU);
-        CASE(ScanV);
-        CASE(ScanW);
-        CASE(ScanX);
-        CASE(ScanY);
-        CASE(ScanZ);
-        CASE(ScanNum1);
-        CASE(ScanNum2);
-        CASE(ScanNum3);
-        CASE(ScanNum4);
-        CASE(ScanNum5);
-        CASE(ScanNum6);
-        CASE(ScanNum7);
-        CASE(ScanNum8);
-        CASE(ScanNum9);
-        CASE(ScanNum0);
-        CASE(ScanEnter);
-        CASE(ScanEscape);
-        CASE(ScanBackspace);
-        CASE(ScanTab);
-        CASE(ScanSpace);
-        CASE(ScanHyphen);
-        CASE(ScanEqual);
-        CASE(ScanLBracket);
-        CASE(ScanRBracket);
-        CASE(ScanBackslash);
-        CASE(ScanSemicolon);
-        CASE(ScanApostrophe);
-        CASE(ScanGrave);
-        CASE(ScanComma);
-        CASE(ScanPeriod);
-        CASE(ScanSlash);
-        CASE(ScanF1);
-        CASE(ScanF2);
-        CASE(ScanF3);
-        CASE(ScanF4);
-        CASE(ScanF5);
-        CASE(ScanF6);
-        CASE(ScanF7);
-        CASE(ScanF8);
-        CASE(ScanF9);
-        CASE(ScanF10);
-        CASE(ScanF11);
-        CASE(ScanF12);
-        CASE(ScanF13);
-        CASE(ScanF14);
-        CASE(ScanF15);
-        CASE(ScanF16);
-        CASE(ScanF17);
-        CASE(ScanF18);
-        CASE(ScanF19);
-        CASE(ScanF20);
-        CASE(ScanF21);
-        CASE(ScanF22);
-        CASE(ScanF23);
-        CASE(ScanF24);
-        CASE(ScanCapsLock);
-        CASE(ScanPrintScreen);
-        CASE(ScanScrollLock);
-        CASE(ScanPause);
-        CASE(ScanInsert);
-        CASE(ScanHome);
-        CASE(ScanPageUp);
-        CASE(ScanDelete);
-        CASE(ScanEnd);
-        CASE(ScanPageDown);
-        CASE(ScanRight);
-        CASE(ScanLeft);
-        CASE(ScanDown);
-        CASE(ScanUp);
-        CASE(ScanNumLock);
-        CASE(ScanNumpadDivide);
-        CASE(ScanNumpadMultiply);
-        CASE(ScanNumpadMinus);
-        CASE(ScanNumpadPlus);
-        CASE(ScanNumpadEqual);
-        CASE(ScanNumpadEnter);
-        CASE(ScanNumpadDecimal);
-        CASE(ScanNumpad1);
-        CASE(ScanNumpad2);
-        CASE(ScanNumpad3);
-        CASE(ScanNumpad4);
-        CASE(ScanNumpad5);
-        CASE(ScanNumpad6);
-        CASE(ScanNumpad7);
-        CASE(ScanNumpad8);
-        CASE(ScanNumpad9);
-        CASE(ScanNumpad0);
-        CASE(ScanNonUsBackslash);
-        CASE(ScanApplication);
-        CASE(ScanExecute);
-        CASE(ScanModeChange);
-        CASE(ScanHelp);
-        CASE(ScanMenu);
-        CASE(ScanSelect);
-        CASE(ScanRedo);
-        CASE(ScanUndo);
-        CASE(ScanCut);
-        CASE(ScanCopy);
-        CASE(ScanPaste);
-        CASE(ScanVolumeMute);
-        CASE(ScanVolumeUp);
-        CASE(ScanVolumeDown);
-        CASE(ScanMediaPlayPause);
-        CASE(ScanMediaStop);
-        CASE(ScanMediaNextTrack);
-        CASE(ScanMediaPreviousTrack);
-        CASE(ScanLControl);
-        CASE(ScanLShift);
-        CASE(ScanLAlt);
-        CASE(ScanLSystem);
-        CASE(ScanRControl);
-        CASE(ScanRShift);
-        CASE(ScanRAlt);
-        CASE(ScanRSystem);
-        CASE(ScanBack);
-        CASE(ScanForward);
-        CASE(ScanRefresh);
-        CASE(ScanStop);
-        CASE(ScanSearch);
-        CASE(ScanFavorites);
-        CASE(ScanHomePage);
-        CASE(ScanLaunchApplication1);
-        CASE(ScanLaunchApplication2);
-        CASE(ScanLaunchMail);
-        CASE(ScanLaunchMediaSelect);
+        CASE(Scan::Unknown);
+        CASE(Scan::A);
+        CASE(Scan::B);
+        CASE(Scan::C);
+        CASE(Scan::D);
+        CASE(Scan::E);
+        CASE(Scan::F);
+        CASE(Scan::G);
+        CASE(Scan::H);
+        CASE(Scan::I);
+        CASE(Scan::J);
+        CASE(Scan::K);
+        CASE(Scan::L);
+        CASE(Scan::M);
+        CASE(Scan::N);
+        CASE(Scan::O);
+        CASE(Scan::P);
+        CASE(Scan::Q);
+        CASE(Scan::R);
+        CASE(Scan::S);
+        CASE(Scan::T);
+        CASE(Scan::U);
+        CASE(Scan::V);
+        CASE(Scan::W);
+        CASE(Scan::X);
+        CASE(Scan::Y);
+        CASE(Scan::Z);
+        CASE(Scan::Num1);
+        CASE(Scan::Num2);
+        CASE(Scan::Num3);
+        CASE(Scan::Num4);
+        CASE(Scan::Num5);
+        CASE(Scan::Num6);
+        CASE(Scan::Num7);
+        CASE(Scan::Num8);
+        CASE(Scan::Num9);
+        CASE(Scan::Num0);
+        CASE(Scan::Enter);
+        CASE(Scan::Escape);
+        CASE(Scan::Backspace);
+        CASE(Scan::Tab);
+        CASE(Scan::Space);
+        CASE(Scan::Hyphen);
+        CASE(Scan::Equal);
+        CASE(Scan::LBracket);
+        CASE(Scan::RBracket);
+        CASE(Scan::Backslash);
+        CASE(Scan::Semicolon);
+        CASE(Scan::Apostrophe);
+        CASE(Scan::Grave);
+        CASE(Scan::Comma);
+        CASE(Scan::Period);
+        CASE(Scan::Slash);
+        CASE(Scan::F1);
+        CASE(Scan::F2);
+        CASE(Scan::F3);
+        CASE(Scan::F4);
+        CASE(Scan::F5);
+        CASE(Scan::F6);
+        CASE(Scan::F7);
+        CASE(Scan::F8);
+        CASE(Scan::F9);
+        CASE(Scan::F10);
+        CASE(Scan::F11);
+        CASE(Scan::F12);
+        CASE(Scan::F13);
+        CASE(Scan::F14);
+        CASE(Scan::F15);
+        CASE(Scan::F16);
+        CASE(Scan::F17);
+        CASE(Scan::F18);
+        CASE(Scan::F19);
+        CASE(Scan::F20);
+        CASE(Scan::F21);
+        CASE(Scan::F22);
+        CASE(Scan::F23);
+        CASE(Scan::F24);
+        CASE(Scan::CapsLock);
+        CASE(Scan::PrintScreen);
+        CASE(Scan::ScrollLock);
+        CASE(Scan::Pause);
+        CASE(Scan::Insert);
+        CASE(Scan::Home);
+        CASE(Scan::PageUp);
+        CASE(Scan::Delete);
+        CASE(Scan::End);
+        CASE(Scan::PageDown);
+        CASE(Scan::Right);
+        CASE(Scan::Left);
+        CASE(Scan::Down);
+        CASE(Scan::Up);
+        CASE(Scan::NumLock);
+        CASE(Scan::NumpadDivide);
+        CASE(Scan::NumpadMultiply);
+        CASE(Scan::NumpadMinus);
+        CASE(Scan::NumpadPlus);
+        CASE(Scan::NumpadEqual);
+        CASE(Scan::NumpadEnter);
+        CASE(Scan::NumpadDecimal);
+        CASE(Scan::Numpad1);
+        CASE(Scan::Numpad2);
+        CASE(Scan::Numpad3);
+        CASE(Scan::Numpad4);
+        CASE(Scan::Numpad5);
+        CASE(Scan::Numpad6);
+        CASE(Scan::Numpad7);
+        CASE(Scan::Numpad8);
+        CASE(Scan::Numpad9);
+        CASE(Scan::Numpad0);
+        CASE(Scan::NonUsBackslash);
+        CASE(Scan::Application);
+        CASE(Scan::Execute);
+        CASE(Scan::ModeChange);
+        CASE(Scan::Help);
+        CASE(Scan::Menu);
+        CASE(Scan::Select);
+        CASE(Scan::Redo);
+        CASE(Scan::Undo);
+        CASE(Scan::Cut);
+        CASE(Scan::Copy);
+        CASE(Scan::Paste);
+        CASE(Scan::VolumeMute);
+        CASE(Scan::VolumeUp);
+        CASE(Scan::VolumeDown);
+        CASE(Scan::MediaPlayPause);
+        CASE(Scan::MediaStop);
+        CASE(Scan::MediaNextTrack);
+        CASE(Scan::MediaPreviousTrack);
+        CASE(Scan::LControl);
+        CASE(Scan::LShift);
+        CASE(Scan::LAlt);
+        CASE(Scan::LSystem);
+        CASE(Scan::RControl);
+        CASE(Scan::RShift);
+        CASE(Scan::RAlt);
+        CASE(Scan::RSystem);
+        CASE(Scan::Back);
+        CASE(Scan::Forward);
+        CASE(Scan::Refresh);
+        CASE(Scan::Stop);
+        CASE(Scan::Search);
+        CASE(Scan::Favorites);
+        CASE(Scan::HomePage);
+        CASE(Scan::LaunchApplication1);
+        CASE(Scan::LaunchApplication2);
+        CASE(Scan::LaunchMail);
+        CASE(Scan::LaunchMediaSelect);
         #undef CASE
 
-        case sf::Keyboard::ScancodeCount:
+        case sf::Keyboard::Scan::ScancodeCount:
             throw std::runtime_error{ "invalid keyboard scancode" };
     }
 

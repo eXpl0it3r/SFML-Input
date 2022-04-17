@@ -92,7 +92,7 @@ int main(int argc, char* argv[])
     std::cout << "\tScancode descriptions\n\n";
     for (auto scancode : scancodes)
         std::cout << std::right << std::setw(3) << static_cast<int>(scancode) << ' '
-                  << std::left  << std::setw(22) << scancode << ' '
+                  << std::left  << std::setw(24) << scancode << ' '
                   << encode(sf::Keyboard::getDescription(scancode)) << '\n';
     std::cout << '\n';
 
@@ -109,34 +109,34 @@ int main(int argc, char* argv[])
         for (auto key : keys)
             if (auto scancode = sf::Keyboard::delocalize(key); scancode != sf::Keyboard::Scan::Unknown)
                 if (auto key2 = sf::Keyboard::localize(scancode); key2 == sf::Keyboard::Unknown)
-                    std::cout << std::setw(10) << key << " -> " << std::setw(22) << scancode << " -> " << key2 << '\n';
+                    std::cout << std::setw(10) << key << " -> " << std::setw(24) << scancode << " -> " << key2 << '\n';
         std::cout << '\n';
 
         std::cout << "\tOther keys for which localize(delocalize(key)) != key\n\n";
         for (auto key : keys)
             if (auto scancode = sf::Keyboard::delocalize(key); scancode != sf::Keyboard::Scan::Unknown)
                 if (auto key2 = sf::Keyboard::localize(scancode); key2 != sf::Keyboard::Unknown && key2 != key)
-                    std::cout << std::setw(10) << key << " -> " << std::setw(22) << scancode << " -> " << key2 << '\n';
+                    std::cout << std::setw(10) << key << " -> " << std::setw(24) << scancode << " -> " << key2 << '\n';
         std::cout << '\n';
 
         std::cout << "\tScancodes for which localize(scancode) == Unknown\n\n";
         for (auto scancode : scancodes)
             if (auto key = sf::Keyboard::localize(scancode); key == sf::Keyboard::Unknown)
-                std::cout << std::setw(22) << scancode << " -> " << key << '\n';
+                std::cout << std::setw(24) << scancode << " -> " << key << '\n';
         std::cout << '\n';
 
         std::cout << "\tOther scancodes for which delocalize(localize(scancode)) == ScanUnknown\n\n";
         for (auto scancode : scancodes)
             if (auto key = sf::Keyboard::localize(scancode); key != sf::Keyboard::Unknown)
                 if (auto scancode2 = sf::Keyboard::delocalize(key); scancode2 == sf::Keyboard::Scan::Unknown)
-                    std::cout << std::setw(22) << scancode << " -> " << std::setw(10) << key << " -> " << scancode2 << '\n';
+                    std::cout << std::setw(24) << scancode << " -> " << std::setw(10) << key << " -> " << scancode2 << '\n';
         std::cout << '\n';
 
         std::cout << "\tOther scancodes for which delocalize(localize(scancode)) != scancode\n\n";
         for (auto scancode : scancodes)
             if (auto key = sf::Keyboard::localize(scancode); key != sf::Keyboard::Unknown)
                 if (auto scancode2 = sf::Keyboard::delocalize(key); scancode2 != sf::Keyboard::Scan::Unknown && scancode2 != scancode)
-                    std::cout << std::setw(22) << scancode << " -> " << std::setw(10) << key << " -> " << scancode2 << '\n';
+                    std::cout << std::setw(24) << scancode << " -> " << std::setw(10) << key << " -> " << scancode2 << '\n';
         std::cout << '\n';
     }
 

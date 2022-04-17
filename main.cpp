@@ -163,7 +163,7 @@ int main(int argc, char* argv[])
             {
                 auto key2 = sf::Keyboard::localize(scancode);
                 if (inDegreeScancode[scancode] != 1 || inDegreeKey[key] != 1 || key != key2)
-                    diagram << key << " -> " << scancode << '\n';
+                    diagram << key << " -> \"" << scancode << "\"\n";
             }
             else
             {
@@ -175,12 +175,12 @@ int main(int argc, char* argv[])
             {
                 auto scancode2 = sf::Keyboard::delocalize(key);
                 if (inDegreeKey[key] != 1 || inDegreeScancode[scancode] != 1 || scancode != scancode2)
-                    diagram << key << " -> " << scancode << " [dir=back]\n";
+                    diagram << key << " -> \"" << scancode << "\" [dir=back]\n";
             }
             else
             {
                 // Commented to get a small graph because a lot of scancodes are mapped to Unknown.
-                //diagram << scancode << " {rank=max " << scancode << "}\n";
+                //diagram << '"' << scancode << "\" {rank=max \"" << scancode << "\"}\n";
             }
 
         diagram << "}\n";

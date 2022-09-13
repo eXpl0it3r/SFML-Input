@@ -99,7 +99,7 @@ int main(int argc, char* argv[])
     // Output information about localize and delocalize
     if(args.verbose)
     {
-        std::cout << "\tKeys for which delocalize(key) == ScanUnknown\n\n";
+        std::cout << "\tKeys for which delocalize(key) == Scan::Unknown\n\n";
         for (auto key : keys)
             if (auto scancode = sf::Keyboard::delocalize(key); scancode == sf::Keyboard::Scan::Unknown)
                 std::cout << std::setw(10) << key << " -> " << scancode << '\n';
@@ -125,7 +125,7 @@ int main(int argc, char* argv[])
                 std::cout << std::setw(24) << scancode << " -> " << key << '\n';
         std::cout << '\n';
 
-        std::cout << "\tOther scancodes for which delocalize(localize(scancode)) == ScanUnknown\n\n";
+        std::cout << "\tOther scancodes for which delocalize(localize(scancode)) == Scan::Unknown\n\n";
         for (auto scancode : scancodes)
             if (auto key = sf::Keyboard::localize(scancode); key != sf::Keyboard::Unknown)
                 if (auto scancode2 = sf::Keyboard::delocalize(key); scancode2 == sf::Keyboard::Scan::Unknown)

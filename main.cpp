@@ -74,6 +74,35 @@ constexpr auto keys      = EnumRange{ static_cast<sf::Keyboard::Key>(0), sf::Key
 constexpr auto scancodes = EnumRange{ static_cast<sf::Keyboard::Scancode>(0), sf::Keyboard::Scan::ScancodeCount };
 constexpr auto buttons   = EnumRange{ static_cast<sf::Mouse::Button>(0), sf::Mouse::ButtonCount };
 
+class ShinyText : public sf::Text
+{
+public:
+    using sf::Text::Text;
+
+    void shine(const sf::Color& color = sf::Color::Yellow)
+    {
+        setOutlineColor(color);
+        m_remaining = m_duration;
+    }
+
+    void update(sf::Time frameTime)
+    {
+        const float ratio = m_remaining / m_duration;
+        const float alpha = std::max(0.f, ratio * (2.f - ratio)) * 0.5f;
+
+        auto color = getOutlineColor();
+        color.a = 255 * alpha;
+        setOutlineColor(color);
+
+        if (sf::Time::Zero < m_remaining)
+            m_remaining -= frameTime;
+    }
+
+private:
+    const sf::Time m_duration = sf::milliseconds(150);
+    sf::Time m_remaining;
+};
+
 int main(int argc, char* argv[])
 {
     const auto args = Arguments{ argc, argv };
@@ -222,13 +251,22 @@ int main(int argc, char* argv[])
         return text;
     };
 
+    auto makeShinyText = [&](const sf::String& string)
+    {
+        auto text = ShinyText{ string, font, textSize };
+        text.setLineSpacing(spacingFactor);
+        text.setOutlineThickness(2.f);
+
+        return text;
+    };
+
     constexpr auto columnSize = 300u;
 
-    auto keyPressedText = makeText("Key Pressed\n");
+    auto keyPressedText = makeShinyText("Key Pressed\n");
     keyPressedText.setPosition({ 0.f, 0.f });
-    auto textEnteredText = makeText("Text Entered\n");
+    auto textEnteredText = makeShinyText("Text Entered\n");
     textEnteredText.setPosition({ 0.f, 8 * lineSize });
-    auto keyReleasedText = makeText("Key Released\n");
+    auto keyReleasedText = makeShinyText("Key Released\n");
     keyReleasedText.setPosition({ 0.f, 12 * lineSize });
 
     auto keyPressedCheckText = std::array<sf::Text, 2>{};
@@ -242,9 +280,9 @@ int main(int argc, char* argv[])
     keyPressedScancodeCheckText[1].setPosition({ 4 * columnSize, 0.f });
     keyPressedScancodeCheckText[2].setPosition({ 5 * columnSize, 0.f });
 
-    auto mouseButtonPressedText = makeText("Mouse Button Pressed\n");
+    auto mouseButtonPressedText = makeShinyText("Mouse Button Pressed\n");
     mouseButtonPressedText.setPosition({ 0.f, 400.f });
-    auto mouseButtonReleasedText = makeText("Mouse Button Released\n");
+    auto mouseButtonReleasedText = makeShinyText("Mouse Button Released\n");
     mouseButtonReleasedText.setPosition({ 0.f, 500.f });
     auto mouseButtonPressedCheckText = makeText("IsButtonPressed\n");
     mouseButtonPressedCheckText.setPosition({ 0.f, 600.f });
@@ -256,6 +294,7 @@ int main(int argc, char* argv[])
     auto lastEventScancode = sf::Keyboard::Scan::Unknown;
 
     // Main loop
+    sf::Clock clock;
     while (window.isOpen())
     {
         for (auto event = sf::Event{}; window.pollEvent(event);)
@@ -275,9 +314,15 @@ int main(int argc, char* argv[])
                 lastEventScancode = event.key.scancode;
 
                 if(seemsStrange(event.key))
+                {
+                    keyPressedText.shine(sf::Color::Red);
                     errorSound.play();
+                }
                 else
+                {
+                    keyPressedText.shine(sf::Color::Green);
                     pressedSound.play();
+                }
             }
             else if (event.type == sf::Event::TextEntered)
             {
@@ -285,6 +330,8 @@ int main(int argc, char* argv[])
 
                 textEnteredText.setString(text);
                 std::cout << encode(text);
+
+                textEnteredText.shine();
             }
             else if (event.type == sf::Event::KeyReleased)
             {
@@ -297,9 +344,15 @@ int main(int argc, char* argv[])
                 lastEventScancode = event.key.scancode;
 
                 if(seemsStrange(event.key))
+                {
+                    keyReleasedText.shine(sf::Color::Red);
                     errorSound.play();
+                }
                 else
+                {
+                    keyReleasedText.shine(sf::Color::Green);
                     releasedSound.play();
+                }
             }
             else if (event.type == sf::Event::MouseButtonPressed)
             {
@@ -308,6 +361,7 @@ int main(int argc, char* argv[])
                 mouseButtonPressedText.setString(text);
                 std::cout << encode(text);
 
+                mouseButtonPressedText.shine();
                 pressedSound.play();
             }
             else if (event.type == sf::Event::MouseButtonReleased)
@@ -317,9 +371,18 @@ int main(int argc, char* argv[])
                 mouseButtonReleasedText.setString(text);
                 std::cout << encode(text);
 
+                mouseButtonReleasedText.shine();
                 releasedSound.play();
             }
         }
+
+        const sf::Time frameTime = clock.restart();
+
+        keyPressedText.update(frameTime);
+        textEnteredText.update(frameTime);
+        keyReleasedText.update(frameTime);
+        mouseButtonPressedText.update(frameTime);
+        mouseButtonReleasedText.update(frameTime);
 
         for (auto key : keys)
             keyPressed[static_cast<unsigned>(key)] = sf::Keyboard::isKeyPressed(key);

@@ -241,7 +241,7 @@ int main(int argc, char* argv[])
 
     constexpr auto textSize = 14u, space = 4u;
     constexpr auto lineSize = textSize + space;
-    constexpr auto spacingFactor = static_cast<float>(lineSize) / textSize;
+    const auto spacingFactor = static_cast<float>(lineSize) / font.getLineSpacing(textSize);
 
     auto makeText = [&](const sf::String& string)
     {

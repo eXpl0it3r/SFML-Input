@@ -26,6 +26,7 @@ std::string encodeStringToAnsi(const sf::String& string);
 std::string encodeStringToUtf8(const sf::String& string);
 
 sf::String keyEventDescription(sf::String init, const sf::Event::KeyEvent& keyEvent);
+sf::String textEventDescription(const sf::Event::TextEvent& textEvent);
 sf::String buttonEventDescription(sf::String init, const sf::Event::MouseButtonEvent& buttonEvent);
 
 sf::String keyDescription(sf::Keyboard::Key code, bool keyPressed);
@@ -209,11 +210,12 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    auto makeText = [&font](const sf::String& string)
-    {
-        constexpr auto textSize = 14u, space = 4u;
-        constexpr auto spacingFactor = static_cast<float>(textSize + space) / textSize;
+    constexpr auto textSize = 14u, space = 4u;
+    constexpr auto lineSize = textSize + space;
+    constexpr auto spacingFactor = static_cast<float>(lineSize) / textSize;
 
+    auto makeText = [&](const sf::String& string)
+    {
         auto text = sf::Text{ string, font, textSize };
         text.setLineSpacing(spacingFactor);
 
@@ -224,8 +226,10 @@ int main(int argc, char* argv[])
 
     auto keyPressedText = makeText("Key Pressed\n");
     keyPressedText.setPosition({ 0.f, 0.f });
+    auto textEnteredText = makeText("Text Entered\n");
+    textEnteredText.setPosition({ 0.f, 8 * lineSize });
     auto keyReleasedText = makeText("Key Released\n");
-    keyReleasedText.setPosition({ 0.f, 200.f });
+    keyReleasedText.setPosition({ 0.f, 12 * lineSize });
 
     auto keyPressedCheckText = std::array<sf::Text, 2>{};
     keyPressedCheckText.fill(makeText("IsKeyPressed sf::Keyboard::Key\n"));
@@ -274,6 +278,13 @@ int main(int argc, char* argv[])
                     errorSound.play();
                 else
                     pressedSound.play();
+            }
+            else if (event.type == sf::Event::TextEntered)
+            {
+                auto text = textEventDescription(event.text);
+
+                textEnteredText.setString(text);
+                std::cout << encode(text);
             }
             else if (event.type == sf::Event::KeyReleased)
             {
@@ -376,6 +387,7 @@ int main(int argc, char* argv[])
         window.clear();
 
         window.draw(keyPressedText);
+        window.draw(textEnteredText);
         window.draw(keyReleasedText);
 
         for (const auto& text : keyPressedCheckText)
@@ -452,6 +464,18 @@ sf::String keyEventDescription(sf::String text, const sf::Event::KeyEvent& keyEv
     text += std::to_string(sf::Keyboard::delocalize(keyEvent.code));
     text += "\tsf::Keyboard::";
     text += scancodeIdentifier(sf::Keyboard::delocalize(keyEvent.code));
+    text += "\n\n";
+
+    return text;
+}
+
+sf::String textEventDescription(const sf::Event::TextEvent& textEvent)
+{
+    sf::String text = "Text Entered";
+    text += "\n\nunicode:\t";
+    text += std::to_string(textEvent.unicode);
+    text += "\t";
+    text += textEvent.unicode;
     text += "\n\n";
 
     return text;

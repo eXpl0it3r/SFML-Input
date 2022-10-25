@@ -1,13 +1,24 @@
 cmake_minimum_required(VERSION 3.15)
 
+option(BUILD_SFML "Fetch and build SFML from source (using the feature/scancode branch)" NO) 
+
 project(SFML-Input)
 
 set(CMAKE_CXX_STANDARD 17)
 
-if(WIN32)
-	set(SFML_STATIC_LIBRARIES TRUE)
+# Build or find SFML
+if (BUILD_SFML)
+	include(FetchContent)
+	FetchContent_Declare(SFML
+		GIT_REPOSITORY https://github.com/SFML/SFML.git
+		GIT_TAG feature/scancode)
+	FetchContent_MakeAvailable(SFML)
+else()
+	if(WIN32)
+       set(SFML_STATIC_LIBRARIES TRUE)
+	endif()
+	find_package(SFML 2.5 COMPONENTS graphics audio REQUIRED)
 endif()
-find_package(SFML 2.5 COMPONENTS graphics audio REQUIRED)
 
 add_executable(SFML-Input main.cpp)
 

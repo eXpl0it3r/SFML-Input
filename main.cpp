@@ -303,6 +303,11 @@ int main(int argc, char* argv[])
             {
                 window.close();
             }
+            else if (event.type == sf::Event::Resized)
+            {
+                const auto size = sf::Vector2u{event.size.width, event.size.height};
+                window.setView(sf::View(sf::FloatRect({}, sf::Vector2f{size})));
+            }
             else if(event.type == sf::Event::KeyPressed)
             {
                 auto text = keyEventDescription("Key Pressed", event.key);

@@ -666,7 +666,7 @@ std::string keyIdentifier(sf::Keyboard::Key code)
         CASE(Apostrophe);
         CASE(Slash);
         CASE(Backslash);
-        CASE(Tilde);
+        CASE(Grave);
         CASE(Equal);
         CASE(Hyphen);
         CASE(Space);

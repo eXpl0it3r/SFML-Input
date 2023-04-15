@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.15)
 
-option(BUILD_SFML "Fetch and build SFML from source (using the feature/scancode branch)" NO) 
+option(BUILD_SFML "Fetch and build SFML from source" NO)
 
 project(SFML-Input)
 

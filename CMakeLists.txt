@@ -20,7 +20,7 @@ else()
     find_package(SFML 2.5 COMPONENTS graphics audio REQUIRED)
 endif()
 
-add_executable(SFML-Input main.cpp)
+add_executable(SFML-Input src/main.cpp)
 
 # Static Runtime
 if(WIN32)

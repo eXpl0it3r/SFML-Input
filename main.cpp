@@ -1,25 +1,27 @@
+#include <SFML/Graphics.hpp>
+
+#include <SFML/Audio.hpp>
+
 #include <array>
 #include <filesystem>
 #include <fstream>
-#include <iostream>
 #include <iomanip>
-#include <SFML/Graphics.hpp>
-#include <SFML/Audio.hpp>
+#include <iostream>
 
 constexpr auto help =
-"  -v, --verbose   Show more information\n"
-"  -d, --dot       Generate dot diagram about localize and delocalize functions\n"
-"  -u, --utf8      Encode console output as UTF-8 instead of ANSI\n"
-"  -h, --help      Show help and exit";
+    "  -v, --verbose   Show more information\n"
+    "  -d, --dot       Generate dot diagram about localize and delocalize functions\n"
+    "  -u, --utf8      Encode console output as UTF-8 instead of ANSI\n"
+    "  -h, --help      Show help and exit";
 
 struct Arguments
 {
     Arguments(int argc, char* argv[]);
 
-    bool verbose = false;
+    bool verbose         = false;
     bool generateDiagram = false;
-    bool utf8 = false;
-    bool help = false;
+    bool utf8            = false;
+    bool help            = false;
 };
 
 std::string encodeStringToAnsi(const sf::String& string);
@@ -49,30 +51,48 @@ public:
     class Iterator
     {
     public:
-        constexpr explicit Iterator(Enum value) : m_value{ value } {}
+        constexpr explicit Iterator(Enum value) : m_value{value}
+        {
+        }
 
-        constexpr Enum operator*() const { return static_cast<Enum>(m_value); }
-        constexpr Iterator& operator++() { ++m_value; return *this; }
-        constexpr bool operator!=(const Iterator& other) const { return *(*this) != *other; }
+        constexpr Enum operator*() const
+        {
+            return static_cast<Enum>(m_value);
+        }
+        constexpr Iterator& operator++()
+        {
+            ++m_value;
+            return *this;
+        }
+        constexpr bool operator!=(const Iterator& other) const
+        {
+            return *(*this) != *other;
+        }
 
     private:
         typename std::underlying_type_t<Enum> m_value;
     };
 
-    constexpr explicit EnumRange(Enum begin, Enum end)
-    : m_begin{ begin }, m_end{ end }
-    {}
+    constexpr explicit EnumRange(Enum begin, Enum end) : m_begin{begin}, m_end{end}
+    {
+    }
 
-    constexpr Iterator begin() const { return Iterator{ m_begin }; }
-    constexpr Iterator end()   const { return Iterator{ m_end }; }
+    constexpr Iterator begin() const
+    {
+        return Iterator{m_begin};
+    }
+    constexpr Iterator end() const
+    {
+        return Iterator{m_end};
+    }
 
 private:
     const Enum m_begin, m_end;
 };
 
-constexpr auto keys      = EnumRange{ static_cast<sf::Keyboard::Key>(0), sf::Keyboard::KeyCount };
-constexpr auto scancodes = EnumRange{ static_cast<sf::Keyboard::Scancode>(0), sf::Keyboard::Scan::ScancodeCount };
-constexpr auto buttons   = EnumRange{ static_cast<sf::Mouse::Button>(0), sf::Mouse::ButtonCount };
+constexpr auto keys      = EnumRange{static_cast<sf::Keyboard::Key>(0), sf::Keyboard::KeyCount};
+constexpr auto scancodes = EnumRange{static_cast<sf::Keyboard::Scancode>(0), sf::Keyboard::Scan::ScancodeCount};
+constexpr auto buttons   = EnumRange{static_cast<sf::Mouse::Button>(0), sf::Mouse::ButtonCount};
 
 class ShinyText : public sf::Text
 {
@@ -91,7 +111,7 @@ public:
         const float alpha = std::max(0.f, ratio * (2.f - ratio)) * 0.5f;
 
         auto color = getOutlineColor();
-        color.a = 255 * alpha;
+        color.a    = 255 * alpha;
         setOutlineColor(color);
 
         if (sf::Time::Zero < m_remaining)
@@ -100,34 +120,32 @@ public:
 
 private:
     const sf::Time m_duration = sf::milliseconds(150);
-    sf::Time m_remaining;
+    sf::Time       m_remaining;
 };
 
 int main(int argc, char* argv[])
 {
-    const auto args = Arguments{ argc, argv };
-    if(args.help)
+    const auto args = Arguments{argc, argv};
+    if (args.help)
     {
-        std::cout << "Usage: " << argv[0] << " [OPTION]...\n\n"
-                  << help << '\n';
+        std::cout << "Usage: " << argv[0] << " [OPTION]...\n\n" << help << '\n';
 
         return 0;
     }
 
     const auto encode = args.utf8 ? encodeStringToUtf8 : encodeStringToAnsi;
 
-    auto window = sf::RenderWindow{ {1920, 1200}, "SFML Input Test" };
+    auto window = sf::RenderWindow{{1920, 1200}, "SFML Input Test"};
     window.setFramerateLimit(15);
 
     std::cout << "\tScancode descriptions\n\n";
     for (auto scancode : scancodes)
-        std::cout << std::right << std::setw(3) << static_cast<int>(scancode) << ' '
-                  << std::left  << std::setw(24) << scancode << ' '
-                  << encode(sf::Keyboard::getDescription(scancode)) << '\n';
+        std::cout << std::right << std::setw(3) << static_cast<int>(scancode) << ' ' << std::left << std::setw(24)
+                  << scancode << ' ' << encode(sf::Keyboard::getDescription(scancode)) << '\n';
     std::cout << '\n';
 
     // Output information about localize and delocalize
-    if(args.verbose)
+    if (args.verbose)
     {
         std::cout << "\tKeys for which delocalize(key) == Scan::Unknown\n\n";
         for (auto key : keys)
@@ -165,13 +183,14 @@ int main(int argc, char* argv[])
         std::cout << "\tOther scancodes for which delocalize(localize(scancode)) != scancode\n\n";
         for (auto scancode : scancodes)
             if (auto key = sf::Keyboard::localize(scancode); key != sf::Keyboard::Unknown)
-                if (auto scancode2 = sf::Keyboard::delocalize(key); scancode2 != sf::Keyboard::Scan::Unknown && scancode2 != scancode)
+                if (auto scancode2 = sf::Keyboard::delocalize(key);
+                    scancode2 != sf::Keyboard::Scan::Unknown && scancode2 != scancode)
                     std::cout << std::setw(24) << scancode << " -> " << std::setw(10) << key << " -> " << scancode2 << '\n';
         std::cout << '\n';
     }
 
     // Generate dot diagram about localize and delocalize
-    if(args.generateDiagram)
+    if (args.generateDiagram)
     {
         auto inDegreeScancode = std::array<int, sf::Keyboard::Scan::ScancodeCount>{};
         for (auto key : keys)
@@ -217,7 +236,7 @@ int main(int argc, char* argv[])
     }
 
     // Load resources, setup sf::Sound and sf::Text instances
-    const auto resources_path = std::filesystem::path{ "resources" };
+    const auto resources_path = std::filesystem::path{"resources"};
 
     sf::SoundBuffer errorSoundBuffer, pressedSoundBuffer, releasedSoundBuffer;
     if (!errorSoundBuffer.loadFromFile((resources_path / "error_005.ogg").string()) ||
@@ -228,9 +247,8 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    auto errorSound    = sf::Sound{ errorSoundBuffer },
-         pressedSound  = sf::Sound{ pressedSoundBuffer },
-         releasedSound = sf::Sound{ releasedSoundBuffer };
+    auto errorSound = sf::Sound{errorSoundBuffer}, pressedSound = sf::Sound{pressedSoundBuffer},
+         releasedSound = sf::Sound{releasedSoundBuffer};
 
     auto font = sf::Font{};
     if (!font.loadFromFile((resources_path / "Tuffy.ttf").string()))
@@ -240,12 +258,12 @@ int main(int argc, char* argv[])
     }
 
     constexpr auto textSize = 14u, space = 4u;
-    constexpr auto lineSize = textSize + space;
-    const auto spacingFactor = static_cast<float>(lineSize) / font.getLineSpacing(textSize);
+    constexpr auto lineSize      = textSize + space;
+    const auto     spacingFactor = static_cast<float>(lineSize) / font.getLineSpacing(textSize);
 
     auto makeText = [&](const sf::String& string)
     {
-        auto text = sf::Text{ string, font, textSize };
+        auto text = sf::Text{string, font, textSize};
         text.setLineSpacing(spacingFactor);
 
         return text;
@@ -253,7 +271,7 @@ int main(int argc, char* argv[])
 
     auto makeShinyText = [&](const sf::String& string)
     {
-        auto text = ShinyText{ string, font, textSize };
+        auto text = ShinyText{string, font, textSize};
         text.setLineSpacing(spacingFactor);
         text.setOutlineThickness(2.f);
 
@@ -263,34 +281,34 @@ int main(int argc, char* argv[])
     constexpr auto columnSize = 300u;
 
     auto keyPressedText = makeShinyText("Key Pressed\n");
-    keyPressedText.setPosition({ 0.f, 0.f });
+    keyPressedText.setPosition({0.f, 0.f});
     auto textEnteredText = makeShinyText("Text Entered\n");
-    textEnteredText.setPosition({ 0.f, 8 * lineSize });
+    textEnteredText.setPosition({0.f, 8 * lineSize});
     auto keyReleasedText = makeShinyText("Key Released\n");
-    keyReleasedText.setPosition({ 0.f, 12 * lineSize });
+    keyReleasedText.setPosition({0.f, 12 * lineSize});
 
     auto keyPressedCheckText = std::array<sf::Text, 2>{};
     keyPressedCheckText.fill(makeText("IsKeyPressed sf::Keyboard::Key\n"));
-    keyPressedCheckText[0].setPosition({ 1 * columnSize, 0.f });
-    keyPressedCheckText[1].setPosition({ 2 * columnSize, 0.f });
+    keyPressedCheckText[0].setPosition({1 * columnSize, 0.f});
+    keyPressedCheckText[1].setPosition({2 * columnSize, 0.f});
 
     auto keyPressedScancodeCheckText = std::array<sf::Text, 3>{};
     keyPressedScancodeCheckText.fill(makeText("IsKeyPressed sf::Keyboard::Scancode\n"));
-    keyPressedScancodeCheckText[0].setPosition({ 3 * columnSize, 0.f });
-    keyPressedScancodeCheckText[1].setPosition({ 4 * columnSize, 0.f });
-    keyPressedScancodeCheckText[2].setPosition({ 5 * columnSize, 0.f });
+    keyPressedScancodeCheckText[0].setPosition({3 * columnSize, 0.f});
+    keyPressedScancodeCheckText[1].setPosition({4 * columnSize, 0.f});
+    keyPressedScancodeCheckText[2].setPosition({5 * columnSize, 0.f});
 
     auto mouseButtonPressedText = makeShinyText("Mouse Button Pressed\n");
-    mouseButtonPressedText.setPosition({ 0.f, 400.f });
+    mouseButtonPressedText.setPosition({0.f, 400.f});
     auto mouseButtonReleasedText = makeShinyText("Mouse Button Released\n");
-    mouseButtonReleasedText.setPosition({ 0.f, 500.f });
+    mouseButtonReleasedText.setPosition({0.f, 500.f});
     auto mouseButtonPressedCheckText = makeText("IsButtonPressed\n");
-    mouseButtonPressedCheckText.setPosition({ 0.f, 600.f });
+    mouseButtonPressedCheckText.setPosition({0.f, 600.f});
 
-    auto keyPressed = std::array<bool, sf::Keyboard::KeyCount>{};
+    auto keyPressed      = std::array<bool, sf::Keyboard::KeyCount>{};
     auto scancodePressed = std::array<bool, sf::Keyboard::Scan::ScancodeCount>{};
 
-    auto lastEventKey = sf::Keyboard::Unknown;
+    auto lastEventKey      = sf::Keyboard::Unknown;
     auto lastEventScancode = sf::Keyboard::Scan::Unknown;
 
     // Main loop
@@ -308,17 +326,17 @@ int main(int argc, char* argv[])
                 const auto size = sf::Vector2u{event.size.width, event.size.height};
                 window.setView(sf::View(sf::FloatRect({}, sf::Vector2f{size})));
             }
-            else if(event.type == sf::Event::KeyPressed)
+            else if (event.type == sf::Event::KeyPressed)
             {
                 auto text = keyEventDescription("Key Pressed", event.key);
 
                 keyPressedText.setString(text);
                 std::cout << encode(text);
 
-                lastEventKey = event.key.code;
+                lastEventKey      = event.key.code;
                 lastEventScancode = event.key.scancode;
 
-                if(seemsStrange(event.key))
+                if (seemsStrange(event.key))
                 {
                     keyPressedText.shine(sf::Color::Red);
                     errorSound.play();
@@ -345,10 +363,10 @@ int main(int argc, char* argv[])
                 keyReleasedText.setString(text);
                 std::cout << encode(text);
 
-                lastEventKey = event.key.code;
+                lastEventKey      = event.key.code;
                 lastEventScancode = event.key.scancode;
 
-                if(seemsStrange(event.key))
+                if (seemsStrange(event.key))
                 {
                     keyReleasedText.shine(sf::Color::Red);
                     errorSound.play();
@@ -393,18 +411,15 @@ int main(int argc, char* argv[])
             keyPressed[static_cast<unsigned>(key)] = sf::Keyboard::isKeyPressed(key);
 
         {
-            constexpr auto keyBounds = std::array
-            {
-                static_cast<sf::Keyboard::Key>(0),
-                sf::Keyboard::Apostrophe,
-                sf::Keyboard::KeyCount
-            };
+            constexpr auto keyBounds = std::array{static_cast<sf::Keyboard::Key>(0),
+                                                  sf::Keyboard::Apostrophe,
+                                                  sf::Keyboard::KeyCount};
 
-            auto text = sf::String{ "IsKeyPressed sf::Keyboard::Key" };
+            auto text = sf::String{"IsKeyPressed sf::Keyboard::Key"};
             for (auto b = 0u; b < keyBounds.size() - 1; ++b)
             {
                 text += "\n\nCode / Description / Delocalized / Pressed\n";
-                for (auto key : EnumRange{ keyBounds[b], keyBounds[b + 1] })
+                for (auto key : EnumRange{keyBounds[b], keyBounds[b + 1]})
                 {
                     if (key == lastEventKey)
                         text += "*\t";
@@ -420,21 +435,18 @@ int main(int argc, char* argv[])
             scancodePressed[static_cast<unsigned>(scancode)] = sf::Keyboard::isKeyPressed(scancode);
 
         {
-            constexpr auto scancodeBounds = std::array
-            {
-                static_cast<sf::Keyboard::Scancode>(0),
-                sf::Keyboard::Scan::Comma,
-                sf::Keyboard::Scan::Numpad1,
-                sf::Keyboard::Scan::ScancodeCount
-            };
+            constexpr auto scancodeBounds = std::array{static_cast<sf::Keyboard::Scancode>(0),
+                                                       sf::Keyboard::Scan::Comma,
+                                                       sf::Keyboard::Scan::Numpad1,
+                                                       sf::Keyboard::Scan::ScancodeCount};
 
-            auto text = sf::String{ "IsKeyPressed sf::Keyboard::Scancode" };
+            auto text = sf::String{"IsKeyPressed sf::Keyboard::Scancode"};
             for (auto b = 0u; b < scancodeBounds.size() - 1; ++b)
             {
                 text += "\n\nScanCode / Description / Localized / Pressed\n";
-                for (auto scancode : EnumRange{ scancodeBounds[b], scancodeBounds[b + 1] })
+                for (auto scancode : EnumRange{scancodeBounds[b], scancodeBounds[b + 1]})
                 {
-                    if(scancode == lastEventScancode)
+                    if (scancode == lastEventScancode)
                         text += "*\t";
                     text += scancodeDescription(scancode, scancodePressed[static_cast<unsigned>(scancode)]);
                 }
@@ -445,7 +457,7 @@ int main(int argc, char* argv[])
         }
 
         {
-            auto text = sf::String{ "IsButtonPressed sf::Mouse::Button\n\n" };
+            auto text = sf::String{"IsButtonPressed sf::Mouse::Button\n\n"};
             for (auto button : buttons)
                 text += buttonDescription(button, sf::Mouse::isButtonPressed(button));
 
@@ -475,7 +487,7 @@ Arguments::Arguments(int argc, char* argv[])
 {
     for (int i = 1; i < argc; i++)
     {
-        const auto arg = std::string{ argv[i] };
+        const auto arg = std::string{argv[i]};
 
         if (arg == "-h" || arg == "--help")
             help = true;
@@ -595,22 +607,23 @@ sf::String buttonDescription(sf::Mouse::Button button, bool buttonPressed)
 
 bool seemsStrange(const sf::Event::KeyEvent& keyEvent)
 {
-    return keyEvent.code == -1
-        || keyEvent.scancode == -1
-        || sf::Keyboard::getDescription(keyEvent.scancode) == ""
-        || sf::Keyboard::localize(keyEvent.scancode) != keyEvent.code
-        || sf::Keyboard::delocalize(keyEvent.code) != keyEvent.scancode;
+    return keyEvent.code == -1 || keyEvent.scancode == -1 || sf::Keyboard::getDescription(keyEvent.scancode) == "" ||
+           sf::Keyboard::localize(keyEvent.scancode) != keyEvent.code ||
+           sf::Keyboard::delocalize(keyEvent.code) != keyEvent.scancode;
 }
 
 std::string keyIdentifier(sf::Keyboard::Key code)
 {
     // Inspired by mantognini/SFML-Test-Events
 
-    static_assert(sf::Keyboard::KeyCount == 101, "Number of SFML keys has changed. The switch statement must be updated.");
+    static_assert(sf::Keyboard::KeyCount == 101,
+                  "Number of SFML keys has changed. The switch statement must be updated.");
 
-    switch(code)
+    switch (code)
     {
-        #define CASE(code) case sf::Keyboard::code: return #code
+#define CASE(code)           \
+    case sf::Keyboard::code: \
+        return #code
         CASE(Unknown);
         CASE(A);
         CASE(B);
@@ -713,26 +726,29 @@ std::string keyIdentifier(sf::Keyboard::Key code)
         CASE(F14);
         CASE(F15);
         CASE(Pause);
-        #undef CASE
+#undef CASE
 
         case sf::Keyboard::KeyCount: // So that all values are handled.
-            throw std::runtime_error{ "invalid keyboard code" };
+            throw std::runtime_error{"invalid keyboard code"};
 
-        // No default case on purpose so that compilers can report unhandled values.
+            // No default case on purpose so that compilers can report unhandled values.
     }
 
-    throw std::runtime_error{ "invalid keyboard code" };
+    throw std::runtime_error{"invalid keyboard code"};
 }
 
 std::string scancodeIdentifier(sf::Keyboard::Scancode scancode)
 {
     // Same design as the keyIdentifier function
 
-    static_assert(sf::Keyboard::Scan::ScancodeCount == 146, "Number of SFML scancodes has changed. The switch statement must be updated.");
+    static_assert(sf::Keyboard::Scan::ScancodeCount == 146,
+                  "Number of SFML scancodes has changed. The switch statement must be updated.");
 
-    switch(scancode)
+    switch (scancode)
     {
-        #define CASE(scancode) case sf::Keyboard::scancode: return #scancode
+#define CASE(scancode)           \
+    case sf::Keyboard::scancode: \
+        return #scancode
         CASE(Scan::Unknown);
         CASE(Scan::A);
         CASE(Scan::B);
@@ -880,36 +896,39 @@ std::string scancodeIdentifier(sf::Keyboard::Scancode scancode)
         CASE(Scan::LaunchApplication2);
         CASE(Scan::LaunchMail);
         CASE(Scan::LaunchMediaSelect);
-        #undef CASE
+#undef CASE
 
         case sf::Keyboard::Scan::ScancodeCount:
-            throw std::runtime_error{ "invalid keyboard scancode" };
+            throw std::runtime_error{"invalid keyboard scancode"};
     }
 
-    throw std::runtime_error{ "invalid keyboard scancode" };
+    throw std::runtime_error{"invalid keyboard scancode"};
 }
 
 std::string buttonIdentifier(sf::Mouse::Button button)
 {
     // Same design as the keyIdentifier function
 
-    static_assert(sf::Mouse::ButtonCount == 5, "Number of SFML mouse buttons has changed. The switch statement must be updated.");
+    static_assert(sf::Mouse::ButtonCount == 5,
+                  "Number of SFML mouse buttons has changed. The switch statement must be updated.");
 
-    switch(button)
+    switch (button)
     {
-        #define CASE(button) case sf::Mouse::button: return #button
+#define CASE(button)        \
+    case sf::Mouse::button: \
+        return #button
         CASE(Left);
         CASE(Right);
         CASE(Middle);
         CASE(XButton1);
         CASE(XButton2);
-        #undef CASE
+#undef CASE
 
         case sf::Mouse::ButtonCount:
-            throw std::runtime_error{ "invalid mouse button" };
+            throw std::runtime_error{"invalid mouse button"};
     }
 
-    throw std::runtime_error{ "invalid mouse button" };
+    throw std::runtime_error{"invalid mouse button"};
 }
 
 std::ostream& operator<<(std::ostream& os, sf::Keyboard::Key code)

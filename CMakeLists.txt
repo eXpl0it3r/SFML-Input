@@ -20,7 +20,16 @@ else()
     find_package(SFML 2.5 COMPONENTS graphics audio REQUIRED)
 endif()
 
-add_executable(SFML-Input src/main.cpp)
+add_executable(SFML-Input
+    src/Application.cpp
+    src/Application.hpp
+    src/main.cpp
+    src/ranges.hpp
+    src/ShinyText.cpp
+    src/ShinyText.hpp
+    src/strings.cpp
+    src/strings.hpp
+)
 
 # Static Runtime
 if(WIN32)

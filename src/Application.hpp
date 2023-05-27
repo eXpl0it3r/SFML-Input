@@ -1,5 +1,6 @@
 #pragma once
 
+#include "KeyboardView.hpp"
 #include "ShinyText.hpp"
 #include "strings.hpp"
 
@@ -52,4 +53,6 @@ private:
 
     ShinyText mouseButtonPressedText, mouseButtonReleasedText;
     sf::Text  mouseButtonPressedCheckText;
+
+    KeyboardView keyboardView{resources.font};
 };

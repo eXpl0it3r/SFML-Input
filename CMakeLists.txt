@@ -23,6 +23,8 @@ endif()
 add_executable(SFML-Input
     src/Application.cpp
     src/Application.hpp
+    src/KeyboardView.cpp
+    src/KeyboardView.hpp
     src/main.cpp
     src/ranges.hpp
     src/ShinyText.cpp

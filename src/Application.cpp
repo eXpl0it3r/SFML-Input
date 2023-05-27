@@ -126,6 +126,8 @@ Application::Application(const Resources& resources, Encoder encode) : resources
     mouseButtonPressedText      = makeShinyText("Mouse Button Pressed", {0, 30 * lineSize});
     mouseButtonReleasedText     = makeShinyText("Mouse Button Released", {0, 34 * lineSize});
     mouseButtonPressedCheckText = makeText("", {0, 38 * lineSize});
+
+    keyboardView.setPosition({320, 64});
 }
 
 int Application::run()
@@ -218,6 +220,8 @@ void Application::handle(const sf::Event& event)
         mouseButtonReleasedText.shine();
         releasedSound.play();
     }
+
+    keyboardView.handle(event);
 }
 
 void Application::update(sf::Time frameTime)
@@ -245,6 +249,8 @@ void Application::update(sf::Time frameTime)
 
         mouseButtonPressedCheckText.setString(text);
     }
+
+    keyboardView.update(frameTime);
 }
 
 void Application::render()
@@ -259,6 +265,8 @@ void Application::render()
     window.draw(mouseButtonPressedText);
     window.draw(mouseButtonReleasedText);
     window.draw(mouseButtonPressedCheckText);
+
+    window.draw(keyboardView);
 
     window.display();
 }

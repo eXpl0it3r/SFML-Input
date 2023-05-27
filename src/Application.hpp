@@ -48,12 +48,8 @@ private:
     sf::Sound releasedSound{resources.releasedSoundBuffer};
 
     ShinyText keyPressedText, textEnteredText, keyReleasedText;
+    sf::Text  keyPressedCheckText;
+
     ShinyText mouseButtonPressedText, mouseButtonReleasedText;
-
-    std::array<sf::Text, 2> keyPressedCheckText;
-    std::array<sf::Text, 3> keyPressedScancodeCheckText;
-    sf::Text                mouseButtonPressedCheckText;
-
-    sf::Keyboard::Key      lastEventKey{sf::Keyboard::Unknown};
-    sf::Keyboard::Scancode lastEventScancode{sf::Keyboard::Scan::Unknown};
+    sf::Text  mouseButtonPressedCheckText;
 };

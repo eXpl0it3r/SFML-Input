@@ -1,6 +1,7 @@
 #include "Application.hpp"
 
 #include "ranges.hpp"
+#include "strings.hpp"
 
 #include <iostream>
 
@@ -50,28 +51,6 @@ sf::String buttonEventDescription(sf::String text, const sf::Event::MouseButtonE
     text += "\tsf::Mouse::";
     text += buttonIdentifier(buttonEvent.button);
     text += "\n\n";
-
-    return text;
-}
-
-sf::String keyDescription(sf::Keyboard::Key code, bool keyPressed)
-{
-    sf::String text = std::to_string(code) + " / ";
-    text += sf::Keyboard::getDescription(sf::Keyboard::delocalize(code)) + " / ";
-    text += std::to_string(sf::Keyboard::delocalize(code));
-    text += keyPressed ? " Pressed" : "";
-    text += "\n";
-
-    return text;
-}
-
-sf::String scancodeDescription(sf::Keyboard::Scancode scancode, bool scancodeKeyPressed)
-{
-    sf::String text = std::to_string(scancode) + " / ";
-    text += sf::Keyboard::getDescription(scancode) + " / ";
-    text += std::to_string(sf::Keyboard::localize(scancode));
-    text += scancodeKeyPressed ? " Pressed" : "";
-    text += "\n";
 
     return text;
 }
@@ -130,14 +109,6 @@ Application::Application(const Resources& resources, Encoder encode) : resources
         return text;
     };
 
-    keyPressedText          = makeShinyText("Key Pressed", {0, 0});
-    textEnteredText         = makeShinyText("Text Entered", {0, 8 * lineSize});
-    keyReleasedText         = makeShinyText("Key Released", {0, 12 * lineSize});
-    mouseButtonPressedText  = makeShinyText("Mouse Button Pressed", {0, 22 * lineSize});
-    mouseButtonReleasedText = makeShinyText("Mouse Button Released", {0, 26 * lineSize});
-
-    static constexpr auto columnSize{300u};
-
     auto makeText = [&](const sf::String& string, const sf::Vector2f& position)
     {
         auto text = sf::Text{string, resources.font, textSize};
@@ -147,16 +118,14 @@ Application::Application(const Resources& resources, Encoder encode) : resources
         return text;
     };
 
-    keyPressedCheckText = {
-        makeText("", {1 * columnSize, 0}),
-        makeText("", {2 * columnSize, 0}),
-    };
-    keyPressedScancodeCheckText = {
-        makeText("", {3 * columnSize, 0}),
-        makeText("", {4 * columnSize, 0}),
-        makeText("", {5 * columnSize, 0}),
-    };
-    mouseButtonPressedCheckText = makeText("", {0, 30 * lineSize});
+    keyPressedText      = makeShinyText("Key Pressed", {0, 0});
+    textEnteredText     = makeShinyText("Text Entered", {0, 8 * lineSize});
+    keyReleasedText     = makeShinyText("Key Released", {0, 12 * lineSize});
+    keyPressedCheckText = makeText("", {0, 20 * lineSize});
+
+    mouseButtonPressedText      = makeShinyText("Mouse Button Pressed", {0, 30 * lineSize});
+    mouseButtonReleasedText     = makeShinyText("Mouse Button Released", {0, 34 * lineSize});
+    mouseButtonPressedCheckText = makeText("", {0, 38 * lineSize});
 }
 
 int Application::run()
@@ -191,9 +160,6 @@ void Application::handle(const sf::Event& event)
         keyPressedText.setString(text);
         std::cout << encode(text);
 
-        lastEventKey      = event.key.code;
-        lastEventScancode = event.key.scancode;
-
         if (seemsStrange(event.key))
         {
             keyPressedText.shine(sf::Color::Red);
@@ -220,9 +186,6 @@ void Application::handle(const sf::Event& event)
 
         keyReleasedText.setString(text);
         std::cout << encode(text);
-
-        lastEventKey      = event.key.code;
-        lastEventScancode = event.key.scancode;
 
         if (seemsStrange(event.key))
         {
@@ -265,57 +228,18 @@ void Application::update(sf::Time frameTime)
     mouseButtonPressedText.update(frameTime);
     mouseButtonReleasedText.update(frameTime);
 
-    auto keyPressed = std::array<bool, sf::Keyboard::KeyCount>{};
-    for (auto key : keys)
-        keyPressed[static_cast<unsigned>(key)] = sf::Keyboard::isKeyPressed(key);
-
     {
-        constexpr auto keyBounds = std::array{static_cast<sf::Keyboard::Key>(0), sf::Keyboard::Apostrophe, sf::Keyboard::KeyCount};
-
-        auto text = sf::String{"IsKeyPressed sf::Keyboard::Key"};
-        for (auto b = 0u; b < keyBounds.size() - 1; ++b)
+        auto text = sf::String{"isKeyPressed(sf::Keyboard::Key)\n\n"};
+        for (auto key : keys)
         {
-            text += "\n\nCode / Description / Delocalized / Pressed\n";
-            for (auto key : EnumRange{keyBounds[b], keyBounds[b + 1]})
-            {
-                if (key == lastEventKey)
-                    text += "*\t";
-                text += keyDescription(key, keyPressed[static_cast<unsigned>(key)]);
-            }
-
-            keyPressedCheckText[b].setString(text);
-            text.clear();
+            if (sf::Keyboard::isKeyPressed(key))
+                text += "sf::Keyboard::" + keyIdentifier(key) + "\n";
         }
-    }
-
-    auto scancodePressed = std::array<bool, sf::Keyboard::Scan::ScancodeCount>{};
-    for (auto scancode : scancodes)
-        scancodePressed[static_cast<unsigned>(scancode)] = sf::Keyboard::isKeyPressed(scancode);
-
-    {
-        constexpr auto scancodeBounds = std::array{static_cast<sf::Keyboard::Scancode>(0),
-                                                   sf::Keyboard::Scan::Comma,
-                                                   sf::Keyboard::Scan::Numpad1,
-                                                   sf::Keyboard::Scan::ScancodeCount};
-
-        auto text = sf::String{"IsKeyPressed sf::Keyboard::Scancode"};
-        for (auto b = 0u; b < scancodeBounds.size() - 1; ++b)
-        {
-            text += "\n\nScanCode / Description / Localized / Pressed\n";
-            for (auto scancode : EnumRange{scancodeBounds[b], scancodeBounds[b + 1]})
-            {
-                if (scancode == lastEventScancode)
-                    text += "*\t";
-                text += scancodeDescription(scancode, scancodePressed[static_cast<unsigned>(scancode)]);
-            }
-
-            keyPressedScancodeCheckText[b].setString(text);
-            text.clear();
-        }
+        keyPressedCheckText.setString(text);
     }
 
     {
-        auto text = sf::String{"IsButtonPressed sf::Mouse::Button\n\n"};
+        auto text = sf::String{"isButtonPressed(sf::Mouse::Button)\n\n"};
         for (auto button : buttons)
             text += buttonDescription(button, sf::Mouse::isButtonPressed(button));
 
@@ -330,11 +254,7 @@ void Application::render()
     window.draw(keyPressedText);
     window.draw(textEnteredText);
     window.draw(keyReleasedText);
-
-    for (const auto& text : keyPressedCheckText)
-        window.draw(text);
-    for (const auto& text : keyPressedScancodeCheckText)
-        window.draw(text);
+    window.draw(keyPressedCheckText);
 
     window.draw(mouseButtonPressedText);
     window.draw(mouseButtonReleasedText);

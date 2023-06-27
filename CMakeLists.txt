@@ -11,13 +11,13 @@ if (BUILD_SFML)
     include(FetchContent)
     FetchContent_Declare(SFML
         GIT_REPOSITORY https://github.com/SFML/SFML.git
-        GIT_TAG 2.6.x)
+        GIT_TAG 2.6.0)
     FetchContent_MakeAvailable(SFML)
 else()
     if(WIN32)
        set(SFML_STATIC_LIBRARIES TRUE)
     endif()
-    find_package(SFML 2.5 COMPONENTS graphics audio REQUIRED)
+    find_package(SFML 2.6 COMPONENTS graphics audio REQUIRED)
 endif()
 
 add_executable(SFML-Input

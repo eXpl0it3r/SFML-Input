@@ -2,7 +2,7 @@
 
 Visualize / audiolize keyboard inputs, especially useful to check keyboard layouts and test SFML's scan code implementation
 
-![screenshot](https://user-images.githubusercontent.com/920861/143625819-cddbb490-b68e-4453-b900-26f69ea3a671.png)
+![screenshot](https://github.com/eXpl0it3r/SFML-Input/assets/920861/5d5cbf37-c718-4cd6-8a53-705dced6f4a7)
 
 ## Simulate Keys with AutoHotkey (Windows)
 

@@ -30,8 +30,8 @@ std::string keyIdentifier(sf::Keyboard::Key code)
 
     switch (code)
     {
-#define CASE(code)           \
-    case sf::Keyboard::code: \
+#define CASE(code)                \
+    case sf::Keyboard::Key::code: \
         return #code
         CASE(Unknown);
         CASE(A);
@@ -136,11 +136,7 @@ std::string keyIdentifier(sf::Keyboard::Key code)
         CASE(F15);
         CASE(Pause);
 #undef CASE
-
-        case sf::Keyboard::KeyCount: // So that all values are handled.
-            throw std::runtime_error{"invalid keyboard code"};
-
-            // No default case on purpose so that compilers can report unhandled values.
+        // No default case on purpose so that compilers can report unhandled values.
     }
 
     throw std::runtime_error{"invalid keyboard code"};
@@ -150,7 +146,7 @@ std::string scancodeIdentifier(sf::Keyboard::Scancode scancode)
 {
     // Same design as the keyIdentifier function
 
-    static_assert(sf::Keyboard::Scan::ScancodeCount == 146,
+    static_assert(sf::Keyboard::ScancodeCount == 146,
                   "Number of SFML scancodes has changed. The switch statement must be updated.");
 
     switch (scancode)
@@ -306,9 +302,6 @@ std::string scancodeIdentifier(sf::Keyboard::Scancode scancode)
         CASE(Scan::LaunchMail);
         CASE(Scan::LaunchMediaSelect);
 #undef CASE
-
-        case sf::Keyboard::Scan::ScancodeCount:
-            throw std::runtime_error{"invalid keyboard scancode"};
     }
 
     throw std::runtime_error{"invalid keyboard scancode"};
@@ -323,18 +316,15 @@ std::string buttonIdentifier(sf::Mouse::Button button)
 
     switch (button)
     {
-#define CASE(button)        \
-    case sf::Mouse::button: \
+#define CASE(button)                \
+    case sf::Mouse::Button::button: \
         return #button
         CASE(Left);
         CASE(Right);
         CASE(Middle);
-        CASE(XButton1);
-        CASE(XButton2);
+        CASE(Extra1);
+        CASE(Extra2);
 #undef CASE
-
-        case sf::Mouse::ButtonCount:
-            throw std::runtime_error{"invalid mouse button"};
     }
 
     throw std::runtime_error{"invalid mouse button"};

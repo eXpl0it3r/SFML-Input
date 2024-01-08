@@ -6,8 +6,8 @@
 #include <cmath>
 
 KeyboardView::KeyboardView(const sf::Font& font) :
-m_triangles{sf::PrimitiveType::Triangles, sf::Keyboard::Scan::ScancodeCount * 6},
-m_labels(sf::Keyboard::Scan::ScancodeCount, sf::Text{"", font, 16})
+m_triangles{sf::PrimitiveType::Triangles, sf::Keyboard::ScancodeCount * 6},
+m_labels(sf::Keyboard::ScancodeCount, sf::Text{font, "", 16})
 {
     m_bloatFactor.fill(1.f);
 
@@ -22,7 +22,7 @@ m_labels(sf::Keyboard::Scan::ScancodeCount, sf::Text{"", font, 16})
                 scancodesInMatrix.insert(scancode);
             }
         }
-        assert(scancodesInMatrix.size() == sf::Keyboard::Scan::ScancodeCount);
+        assert(scancodesInMatrix.size() == sf::Keyboard::ScancodeCount);
     }
 
     // Initialize labels
@@ -31,7 +31,7 @@ m_labels(sf::Keyboard::Scan::ScancodeCount, sf::Text{"", font, 16})
     {
         for (const auto& [scancode, size, marginRight] : cells)
         {
-            auto& label = m_labels[scancode];
+            auto& label = m_labels[static_cast<std::size_t>(scancode)];
             label.setString(sf::Keyboard::getDescription(scancode));
             label.setPosition(position + size / 2.f);
 
@@ -60,12 +60,12 @@ void KeyboardView::handle(const sf::Event& event)
     if (event.type == sf::Event::KeyPressed)
     {
         if (event.key.scancode != sf::Keyboard::Scan::Unknown)
-            m_bloatFactor[event.key.scancode] = 0.5f;
+            m_bloatFactor[static_cast<std::size_t>(event.key.scancode)] = 0.5f;
     }
     else if (event.type == sf::Event::KeyReleased)
     {
         if (event.key.scancode != sf::Keyboard::Scan::Unknown)
-            m_bloatFactor[event.key.scancode] = 1.5f;
+            m_bloatFactor[static_cast<std::size_t>(event.key.scancode)] = 1.5f;
     }
 }
 
@@ -92,11 +92,11 @@ void KeyboardView::update(sf::Time frameTime)
         for (const auto& [scancode, size, marginRight] : cells)
         {
             const auto pressed = sf::Keyboard::isKeyPressed(scancode);
-            const auto pad     = padding - padding * (m_bloatFactor[scancode] - 1.f);
+            const auto pad     = padding - padding * (m_bloatFactor[static_cast<std::size_t>(scancode)] - 1.f);
             for (const auto index : {0, 1, 2, 3, 4, 5})
             {
                 const auto& corner = square[indexes[index]];
-                auto&       vertex = m_triangles[6 * scancode + index];
+                auto&       vertex = m_triangles[6 * static_cast<int>(scancode) + index];
 
                 vertex.position = position + sf::Vector2f{pad + (size.x - 2.f * pad) * corner.x,
                                                           pad + (size.y - 2.f * pad) * corner.y};
@@ -109,10 +109,11 @@ void KeyboardView::update(sf::Time frameTime)
     }
 }
 
-void KeyboardView::draw(sf::RenderTarget& target, sf::RenderStates states) const
+void KeyboardView::draw(sf::RenderTarget& target, const sf::RenderStates& states) const
 {
-    states.transform *= getTransform();
-    target.draw(m_triangles, states);
+    auto localStates = states;
+    localStates.transform *= getTransform();
+    target.draw(m_triangles, localStates);
     for (const auto& label : m_labels)
-        target.draw(label, states);
+        target.draw(label, localStates);
 }

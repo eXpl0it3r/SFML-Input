@@ -10,7 +10,7 @@ public:
     class Iterator
     {
     public:
-        constexpr explicit Iterator(Enum value) : m_value{value}
+        constexpr explicit Iterator(std::underlying_type_t<Enum> value) : m_value{value}
         {
         }
 
@@ -32,7 +32,9 @@ public:
         typename std::underlying_type_t<Enum> m_value;
     };
 
-    constexpr explicit EnumRange(Enum begin, Enum end) : m_begin{begin}, m_end{end}
+    constexpr explicit EnumRange(std::underlying_type_t<Enum> begin, std::underlying_type_t<Enum> end) :
+    m_begin{begin},
+    m_end{end}
     {
     }
 
@@ -46,9 +48,9 @@ public:
     }
 
 private:
-    const Enum m_begin, m_end;
+    const std::underlying_type_t<Enum> m_begin, m_end;
 };
 
-constexpr auto keys      = EnumRange{static_cast<sf::Keyboard::Key>(0), sf::Keyboard::KeyCount};
-constexpr auto scancodes = EnumRange{static_cast<sf::Keyboard::Scancode>(0), sf::Keyboard::Scan::ScancodeCount};
-constexpr auto buttons   = EnumRange{static_cast<sf::Mouse::Button>(0), sf::Mouse::ButtonCount};
+constexpr auto keys      = EnumRange<sf::Keyboard::Key>{0, sf::Keyboard::KeyCount};
+constexpr auto scancodes = EnumRange<sf::Keyboard::Scancode>{0, sf::Keyboard::ScancodeCount};
+constexpr auto buttons   = EnumRange<sf::Mouse::Button>{0, sf::Mouse::ButtonCount};

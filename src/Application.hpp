@@ -40,7 +40,7 @@ private:
     void render();
 
 private:
-    sf::RenderWindow window{{1920, 1200}, "SFML Input Test"};
+    sf::RenderWindow window;
     const Resources& resources;
     const Encoder    encode;
 

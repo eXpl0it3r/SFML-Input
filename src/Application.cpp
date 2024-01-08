@@ -3,6 +3,8 @@
 #include "ranges.hpp"
 #include "strings.hpp"
 
+#include <SFML/Window/VideoMode.hpp>
+
 #include <iostream>
 
 namespace
@@ -10,21 +12,21 @@ namespace
 sf::String keyEventDescription(sf::String text, const sf::Event::KeyEvent& keyEvent)
 {
     text += "\n\nCode:\t\t";
-    text += std::to_string(keyEvent.code);
+    text += std::to_string(static_cast<int>(keyEvent.code));
     text += "\tsf::Keyboard::";
     text += keyIdentifier(keyEvent.code);
     text += "\nScanCode:\t";
-    text += std::to_string(keyEvent.scancode);
+    text += std::to_string(static_cast<int>(keyEvent.scancode));
     text += "\tsf::Keyboard::";
     text += scancodeIdentifier(keyEvent.scancode);
     text += "\nDescription:\t";
     text += sf::Keyboard::getDescription(keyEvent.scancode);
     text += "\nLocalized:\t";
-    text += std::to_string(sf::Keyboard::localize(keyEvent.scancode));
+    text += std::to_string(static_cast<int>(sf::Keyboard::localize(keyEvent.scancode)));
     text += "\tsf::Keyboard::";
     text += keyIdentifier(sf::Keyboard::localize(keyEvent.scancode));
     text += "\nDelocalized:\t";
-    text += std::to_string(sf::Keyboard::delocalize(keyEvent.code));
+    text += std::to_string(static_cast<int>(sf::Keyboard::delocalize(keyEvent.code)));
     text += "\tsf::Keyboard::";
     text += scancodeIdentifier(sf::Keyboard::delocalize(keyEvent.code));
     text += "\n\n";
@@ -38,7 +40,7 @@ sf::String textEventDescription(const sf::Event::TextEvent& textEvent)
     text += "\n\nunicode:\t";
     text += std::to_string(textEvent.unicode);
     text += "\t";
-    text += textEvent.unicode;
+    text += static_cast<char32_t>(textEvent.unicode);
     text += "\n\n";
 
     return text;
@@ -47,7 +49,7 @@ sf::String textEventDescription(const sf::Event::TextEvent& textEvent)
 sf::String buttonEventDescription(sf::String text, const sf::Event::MouseButtonEvent& buttonEvent)
 {
     text += "\n\nButton:\t";
-    text += std::to_string(buttonEvent.button);
+    text += std::to_string(static_cast<int>(buttonEvent.button));
     text += "\tsf::Mouse::";
     text += buttonIdentifier(buttonEvent.button);
     text += "\n\n";
@@ -57,7 +59,7 @@ sf::String buttonEventDescription(sf::String text, const sf::Event::MouseButtonE
 
 sf::String buttonDescription(sf::Mouse::Button button, bool buttonPressed)
 {
-    sf::String text = std::to_string(button) + " / ";
+    sf::String text = std::to_string(static_cast<int>(button)) + " / ";
     text += "sf::Mouse::";
     text += buttonIdentifier(button);
     text += buttonPressed ? "\tPressed" : "";
@@ -68,9 +70,38 @@ sf::String buttonDescription(sf::Mouse::Button button, bool buttonPressed)
 
 bool seemsStrange(const sf::Event::KeyEvent& keyEvent)
 {
-    return keyEvent.code == -1 || keyEvent.scancode == -1 || sf::Keyboard::getDescription(keyEvent.scancode) == "" ||
+    return keyEvent.code == sf::Keyboard::Key::Unknown || keyEvent.scancode == sf::Keyboard::Scan::Unknown ||
+           sf::Keyboard::getDescription(keyEvent.scancode) == "" ||
            sf::Keyboard::localize(keyEvent.scancode) != keyEvent.code ||
            sf::Keyboard::delocalize(keyEvent.code) != keyEvent.scancode;
+}
+
+static constexpr auto textSize{14u};
+static constexpr auto space{4u};
+static constexpr auto lineSize{textSize + space};
+
+float getSpacingFactor(const sf::Font& font)
+{
+    return static_cast<float>(lineSize) / font.getLineSpacing(textSize);
+}
+
+ShinyText makeShinyText(const sf::Font& font, const sf::String& string, const sf::Vector2f& position)
+{
+    auto text = ShinyText{font, string, textSize};
+    text.setLineSpacing(getSpacingFactor(font));
+    text.setOutlineThickness(2.f);
+    text.setPosition(position);
+
+    return text;
+}
+
+sf::Text makeText(const sf::Font& font, const sf::String& string, const sf::Vector2f& position)
+{
+    auto text = sf::Text{font, string, textSize};
+    text.setLineSpacing(getSpacingFactor(font));
+    text.setPosition(position);
+
+    return text;
 }
 
 } // namespace
@@ -90,43 +121,19 @@ std::optional<Resources> Resources::load(const std::filesystem::path& resourcesP
     return resources;
 }
 
-Application::Application(const Resources& resources, Encoder encode) : resources{resources}, encode{encode}
+Application::Application(const Resources& resources, Encoder encode) :
+window{sf::VideoMode{{1920, 1200}}, "SFML Input Test"},
+resources{resources},
+encode{encode},
+keyPressedText{makeShinyText(resources.font, "Key Pressed", {0, 0})},
+textEnteredText{makeShinyText(resources.font, "Text Entered", {0, 8 * lineSize})},
+keyReleasedText{makeShinyText(resources.font, "Key Released", {0, 12 * lineSize})},
+keyPressedCheckText{makeText(resources.font, "", {0, 20 * lineSize})},
+mouseButtonPressedText{makeShinyText(resources.font, "Mouse Button Pressed", {0, 30 * lineSize})},
+mouseButtonReleasedText{makeShinyText(resources.font, "Mouse Button Released", {0, 34 * lineSize})},
+mouseButtonPressedCheckText{makeText(resources.font, "", {0, 38 * lineSize})}
 {
     window.setFramerateLimit(15);
-
-    static constexpr auto textSize{14u};
-    static constexpr auto space{4u};
-    static constexpr auto lineSize{textSize + space};
-    const float           spacingFactor{static_cast<float>(lineSize) / resources.font.getLineSpacing(textSize)};
-
-    auto makeShinyText = [&](const sf::String& string, const sf::Vector2f& position)
-    {
-        auto text = ShinyText{string, resources.font, textSize};
-        text.setLineSpacing(spacingFactor);
-        text.setOutlineThickness(2.f);
-        text.setPosition(position);
-
-        return text;
-    };
-
-    auto makeText = [&](const sf::String& string, const sf::Vector2f& position)
-    {
-        auto text = sf::Text{string, resources.font, textSize};
-        text.setLineSpacing(spacingFactor);
-        text.setPosition(position);
-
-        return text;
-    };
-
-    keyPressedText      = makeShinyText("Key Pressed", {0, 0});
-    textEnteredText     = makeShinyText("Text Entered", {0, 8 * lineSize});
-    keyReleasedText     = makeShinyText("Key Released", {0, 12 * lineSize});
-    keyPressedCheckText = makeText("", {0, 20 * lineSize});
-
-    mouseButtonPressedText      = makeShinyText("Mouse Button Pressed", {0, 30 * lineSize});
-    mouseButtonReleasedText     = makeShinyText("Mouse Button Released", {0, 34 * lineSize});
-    mouseButtonPressedCheckText = makeText("", {0, 38 * lineSize});
-
     keyboardView.setPosition({320, 64});
 }
 

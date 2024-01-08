@@ -11,13 +11,13 @@ if (BUILD_SFML)
     include(FetchContent)
     FetchContent_Declare(SFML
         GIT_REPOSITORY https://github.com/SFML/SFML.git
-        GIT_TAG 2.6.0)
+        GIT_TAG master)
     FetchContent_MakeAvailable(SFML)
 else()
     if(WIN32)
        set(SFML_STATIC_LIBRARIES TRUE)
     endif()
-    find_package(SFML 2.6 COMPONENTS graphics audio REQUIRED)
+    find_package(SFML 3 COMPONENTS Graphics Audio REQUIRED)
 endif()
 
 add_executable(SFML-Input
@@ -42,7 +42,7 @@ if(WIN32)
     endif()
 endif()
 
-target_link_libraries(SFML-Input sfml-graphics sfml-audio)
+target_link_libraries(SFML-Input SFML::Graphics SFML::Audio)
 
 install(TARGETS SFML-Input DESTINATION .)
 install(DIRECTORY resources DESTINATION .)

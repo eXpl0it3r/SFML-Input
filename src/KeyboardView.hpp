@@ -24,7 +24,7 @@ public:
     void update(sf::Time frameTime);
 
 private:
-    virtual void draw(sf::RenderTarget& target, const sf::RenderStates& states) const override;
+    virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 
     static constexpr auto keySize = 64.f;
     static constexpr auto padding = 4.f;

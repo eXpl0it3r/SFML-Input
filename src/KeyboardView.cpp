@@ -109,11 +109,10 @@ void KeyboardView::update(sf::Time frameTime)
     }
 }
 
-void KeyboardView::draw(sf::RenderTarget& target, const sf::RenderStates& states) const
+void KeyboardView::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
-    auto localStates = states;
-    localStates.transform *= getTransform();
-    target.draw(m_triangles, localStates);
+    states.transform *= getTransform();
+    target.draw(m_triangles, states);
     for (const auto& label : m_labels)
-        target.draw(label, localStates);
+        target.draw(label, states);
 }

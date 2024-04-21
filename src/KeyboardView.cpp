@@ -57,15 +57,15 @@ m_labels(sf::Keyboard::ScancodeCount, sf::Text{font, "", 16})
 
 void KeyboardView::handle(const sf::Event& event)
 {
-    if (event.type == sf::Event::KeyPressed)
+    if (const auto* keyPressedEvent = event.getIf<sf::Event::KeyPressed>())
     {
-        if (event.key.scancode != sf::Keyboard::Scan::Unknown)
-            m_bloatFactor[static_cast<std::size_t>(event.key.scancode)] = 0.5f;
+        if (keyPressedEvent->scancode != sf::Keyboard::Scan::Unknown)
+            m_bloatFactor[static_cast<std::size_t>(keyPressedEvent->scancode)] = 0.5f;
     }
-    else if (event.type == sf::Event::KeyReleased)
+    else if (const auto* keyReleasedEvent = event.getIf<sf::Event::KeyReleased>())
     {
-        if (event.key.scancode != sf::Keyboard::Scan::Unknown)
-            m_bloatFactor[static_cast<std::size_t>(event.key.scancode)] = 1.5f;
+        if (keyReleasedEvent->scancode != sf::Keyboard::Scan::Unknown)
+            m_bloatFactor[static_cast<std::size_t>(keyReleasedEvent->scancode)] = 1.5f;
     }
 }
 

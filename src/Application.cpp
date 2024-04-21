@@ -9,7 +9,7 @@
 
 namespace
 {
-sf::String keyEventDescription(sf::String text, const sf::Event::KeyEvent& keyEvent)
+sf::String keyEventDescription(sf::String text, const sf::Event::KeyChanged& keyEvent)
 {
     text += "\n\nCode:\t\t";
     text += std::to_string(static_cast<int>(keyEvent.code));
@@ -34,19 +34,19 @@ sf::String keyEventDescription(sf::String text, const sf::Event::KeyEvent& keyEv
     return text;
 }
 
-sf::String textEventDescription(const sf::Event::TextEvent& textEvent)
+sf::String textEventDescription(const sf::Event::TextEntered& textEntered)
 {
     sf::String text = "Text Entered";
     text += "\n\nunicode:\t";
-    text += std::to_string(textEvent.unicode);
+    text += std::to_string(textEntered.unicode);
     text += "\t";
-    text += static_cast<char32_t>(textEvent.unicode);
+    text += static_cast<char32_t>(textEntered.unicode);
     text += "\n\n";
 
     return text;
 }
 
-sf::String buttonEventDescription(sf::String text, const sf::Event::MouseButtonEvent& buttonEvent)
+sf::String buttonEventDescription(sf::String text, const sf::Event::MouseButtonChanged& buttonEvent)
 {
     text += "\n\nButton:\t";
     text += std::to_string(static_cast<int>(buttonEvent.button));
@@ -68,7 +68,7 @@ sf::String buttonDescription(sf::Mouse::Button button, bool buttonPressed)
     return text;
 }
 
-bool seemsStrange(const sf::Event::KeyEvent& keyEvent)
+bool seemsStrange(const sf::Event::KeyChanged& keyEvent)
 {
     return keyEvent.code == sf::Keyboard::Key::Unknown || keyEvent.scancode == sf::Keyboard::Scan::Unknown ||
            sf::Keyboard::getDescription(keyEvent.scancode) == "" ||
@@ -142,7 +142,7 @@ int Application::run()
     auto clock = sf::Clock{};
     while (window.isOpen())
     {
-        for (auto event = sf::Event{}; window.pollEvent(event);)
+        while (const auto event = window.pollEvent())
             handle(event);
         update(clock.restart());
         render();
@@ -153,23 +153,22 @@ int Application::run()
 
 void Application::handle(const sf::Event& event)
 {
-    if (event.type == sf::Event::Closed)
+    if (event.is<sf::Event::Closed>())
     {
         window.close();
     }
-    else if (event.type == sf::Event::Resized)
+    else if (const auto* resizedEvent = event.getIf<sf::Event::Resized>())
     {
-        const auto size = sf::Vector2u{event.size.width, event.size.height};
-        window.setView(sf::View(sf::FloatRect({}, sf::Vector2f{size})));
+        window.setView(sf::View(sf::FloatRect({}, sf::Vector2f{resizedEvent->size})));
     }
-    else if (event.type == sf::Event::KeyPressed)
+    else if (const auto* keyPressedEvent = event.getIf<sf::Event::KeyPressed>())
     {
-        auto text = keyEventDescription("Key Pressed", event.key);
+        auto text = keyEventDescription("Key Pressed", *keyPressedEvent);
 
         keyPressedText.setString(text);
         std::cout << encode(text);
 
-        if (seemsStrange(event.key))
+        if (seemsStrange(*keyPressedEvent))
         {
             keyPressedText.shine(sf::Color::Red);
             errorSound.play();
@@ -180,23 +179,23 @@ void Application::handle(const sf::Event& event)
             pressedSound.play();
         }
     }
-    else if (event.type == sf::Event::TextEntered)
+    else if (const auto* textEnteredEvent = event.getIf<sf::Event::TextEntered>())
     {
-        auto text = textEventDescription(event.text);
+        auto text = textEventDescription(*textEnteredEvent);
 
         textEnteredText.setString(text);
         std::cout << encode(text);
 
         textEnteredText.shine();
     }
-    else if (event.type == sf::Event::KeyReleased)
+    else if (const auto* keyReleasedEvent = event.getIf<sf::Event::KeyReleased>())
     {
-        auto text = keyEventDescription("Key Released", event.key);
+        auto text = keyEventDescription("Key Released", *keyReleasedEvent);
 
         keyReleasedText.setString(text);
         std::cout << encode(text);
 
-        if (seemsStrange(event.key))
+        if (seemsStrange(*keyReleasedEvent))
         {
             keyReleasedText.shine(sf::Color::Red);
             errorSound.play();
@@ -207,9 +206,9 @@ void Application::handle(const sf::Event& event)
             releasedSound.play();
         }
     }
-    else if (event.type == sf::Event::MouseButtonPressed)
+    else if (const auto* mouseButtonPressedEvent = event.getIf<sf::Event::MouseButtonPressed>())
     {
-        auto text = buttonEventDescription("Mouse Button Pressed", event.mouseButton);
+        auto text = buttonEventDescription("Mouse Button Pressed", *mouseButtonPressedEvent);
 
         mouseButtonPressedText.setString(text);
         std::cout << encode(text);
@@ -217,9 +216,9 @@ void Application::handle(const sf::Event& event)
         mouseButtonPressedText.shine();
         pressedSound.play();
     }
-    else if (event.type == sf::Event::MouseButtonReleased)
+    else if (const auto* mouseButtonReleasedEvent = event.getIf<sf::Event::MouseButtonReleased>())
     {
-        auto text = buttonEventDescription("Mouse Button Released", event.mouseButton);
+        auto text = buttonEventDescription("Mouse Button Released", *mouseButtonReleasedEvent);
 
         mouseButtonReleasedText.setString(text);
         std::cout << encode(text);

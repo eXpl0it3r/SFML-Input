@@ -108,17 +108,16 @@ sf::Text makeText(const sf::Font& font, const sf::String& string, const sf::Vect
 
 std::optional<Resources> Resources::load(const std::filesystem::path& resourcesPath)
 {
-    auto resources = std::optional<Resources>{std::in_place};
-
-    if (!resources->errorSoundBuffer.loadFromFile((resourcesPath / "error_005.ogg").string()) ||
-        !resources->pressedSoundBuffer.loadFromFile((resourcesPath / "mouseclick1.ogg").string()) ||
-        !resources->releasedSoundBuffer.loadFromFile((resourcesPath / "mouserelease1.ogg").string()) ||
-        !resources->font.loadFromFile((resourcesPath / "Tuffy.ttf").string()))
-    {
+    if (auto error = sf::SoundBuffer::loadFromFile((resourcesPath / "error_005.ogg").string()); !error)
         return std::nullopt;
-    }
-
-    return resources;
+    else if (auto pressed = sf::SoundBuffer::loadFromFile((resourcesPath / "mouseclick1.ogg").string()); !pressed)
+        return std::nullopt;
+    else if (auto released = sf::SoundBuffer::loadFromFile((resourcesPath / "mouserelease1.ogg").string()); !released)
+        return std::nullopt;
+    else if (auto font = sf::Font::loadFromFile((resourcesPath / "Tuffy.ttf").string()); !font)
+        return std::nullopt;
+    else
+        return Resources{std::move(*error), std::move(*pressed), std::move(*released), std::move(*font)};
 }
 
 Application::Application(const Resources& resources, Encoder encode) :

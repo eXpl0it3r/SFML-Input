@@ -35,17 +35,17 @@ m_labels(sf::Keyboard::ScancodeCount, sf::Text{font, "", 16})
             label.setString(sf::Keyboard::getDescription(scancode));
             label.setPosition(position + size / 2.f);
 
-            if (size.x < label.getLocalBounds().width + padding * 2.f + 2.f)
+            if (size.x < label.getLocalBounds().size.x + padding * 2.f + 2.f)
             {
                 auto string = label.getString();
                 string.replace(" ", "\n");
                 label.setString(string);
             }
-            while (size.x < label.getLocalBounds().width + padding * 2.f + 2.f)
+            while (size.x < label.getLocalBounds().size.x + padding * 2.f + 2.f)
                 label.setCharacterSize(label.getCharacterSize() - 2);
 
             const auto bounds = label.getLocalBounds();
-            label.setOrigin(sf::Vector2f{std::round(bounds.left + bounds.width / 2.f),
+            label.setOrigin(sf::Vector2f{std::round(bounds.position.x + bounds.size.x / 2.f),
                                          std::round(static_cast<float>(label.getCharacterSize()) / 2.f)});
 
             position.x += size.x + marginRight;

@@ -142,7 +142,7 @@ int Application::run()
     while (window.isOpen())
     {
         while (const auto event = window.pollEvent())
-            handle(event);
+            handle(*event);
         update(clock.restart());
         render();
     }

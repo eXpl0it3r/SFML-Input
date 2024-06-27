@@ -114,7 +114,7 @@ std::optional<Resources> Resources::load(const std::filesystem::path& resourcesP
         return std::nullopt;
     else if (auto released = sf::SoundBuffer::loadFromFile((resourcesPath / "mouserelease1.ogg").string()); !released)
         return std::nullopt;
-    else if (auto font = sf::Font::loadFromFile((resourcesPath / "Tuffy.ttf").string()); !font)
+    else if (auto font = sf::Font::openFromFile((resourcesPath / "Tuffy.ttf").string()); !font)
         return std::nullopt;
     else
         return Resources{std::move(*error), std::move(*pressed), std::move(*released), std::move(*font)};

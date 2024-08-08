@@ -13,13 +13,11 @@
 
 #include <SFML/Window/Event.hpp>
 
-#include <array>
 #include <filesystem>
-#include <optional>
 
 struct Resources
 {
-    static std::optional<Resources> load(const std::filesystem::path& resourcesPath);
+    bool open(const std::filesystem::path& resourcesPath);
 
     sf::SoundBuffer errorSoundBuffer;
     sf::SoundBuffer pressedSoundBuffer;

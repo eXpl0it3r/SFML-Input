@@ -57,8 +57,8 @@ int main(int argc, char* argv[])
     }
 
     // Check events and sf::Keyboard::isPressed behavior interactively
-    if (const auto resources = Resources::load("resources"))
-        return Application{*resources, encode}.run();
+    if (auto resources = Resources{}; resources.open("resources"))
+        return Application{resources, encode}.run();
     else
         return 1;
 }

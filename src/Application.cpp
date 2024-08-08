@@ -9,7 +9,8 @@
 
 namespace
 {
-sf::String keyEventDescription(sf::String text, const sf::Event::KeyChanged& keyEvent)
+template <typename KeyEventType>
+sf::String keyEventDescription(sf::String text, const KeyEventType& keyEvent)
 {
     text += "\n\nCode:\t\t";
     text += std::to_string(static_cast<int>(keyEvent.code));
@@ -46,7 +47,8 @@ sf::String textEventDescription(const sf::Event::TextEntered& textEntered)
     return text;
 }
 
-sf::String buttonEventDescription(sf::String text, const sf::Event::MouseButtonChanged& buttonEvent)
+template <typename ButtonEventType>
+sf::String buttonEventDescription(sf::String text, const ButtonEventType& buttonEvent)
 {
     text += "\n\nButton:\t";
     text += std::to_string(static_cast<int>(buttonEvent.button));
@@ -68,7 +70,8 @@ sf::String buttonDescription(sf::Mouse::Button button, bool buttonPressed)
     return text;
 }
 
-bool seemsStrange(const sf::Event::KeyChanged& keyEvent)
+template <typename KeyEventType>
+bool seemsStrange(const KeyEventType& keyEvent)
 {
     return keyEvent.code == sf::Keyboard::Key::Unknown || keyEvent.scancode == sf::Keyboard::Scan::Unknown ||
            sf::Keyboard::getDescription(keyEvent.scancode) == "" ||

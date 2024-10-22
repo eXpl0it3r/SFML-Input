@@ -16,7 +16,7 @@ sf::String keyEventDescription(sf::String text, const KeyEventType& keyEvent)
     text += std::to_string(static_cast<int>(keyEvent.code));
     text += "\tsf::Keyboard::";
     text += keyIdentifier(keyEvent.code);
-    text += "\nScanCode:\t";
+    text += "\nScancode:\t";
     text += std::to_string(static_cast<int>(keyEvent.scancode));
     text += "\tsf::Keyboard::";
     text += scancodeIdentifier(keyEvent.scancode);

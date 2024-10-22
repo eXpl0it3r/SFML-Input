@@ -111,21 +111,21 @@ void printLocalizeAndDelocalizeOddities(std::ostream& os)
     os << "\tKeys for which delocalize(key) == Scan::Unknown\n\n";
     for (auto key : keys)
         if (auto scancode = sf::Keyboard::delocalize(key); scancode == sf::Keyboard::Scan::Unknown)
-            os << std::setw(10) << key << " -> " << scancode << '\n';
+            os << std::setw(15) << key << " -> " << scancode << '\n';
     os << '\n';
 
     os << "\tOther keys for which localize(delocalize(key)) == Unknown\n\n";
     for (auto key : keys)
         if (auto scancode = sf::Keyboard::delocalize(key); scancode != sf::Keyboard::Scan::Unknown)
             if (auto key2 = sf::Keyboard::localize(scancode); key2 == sf::Keyboard::Key::Unknown)
-                os << std::setw(10) << key << " -> " << std::setw(24) << scancode << " -> " << key2 << '\n';
+                os << std::setw(15) << key << " -> " << std::setw(24) << scancode << " -> " << key2 << '\n';
     os << '\n';
 
     os << "\tOther keys for which localize(delocalize(key)) != key\n\n";
     for (auto key : keys)
         if (auto scancode = sf::Keyboard::delocalize(key); scancode != sf::Keyboard::Scan::Unknown)
             if (auto key2 = sf::Keyboard::localize(scancode); key2 != sf::Keyboard::Key::Unknown && key2 != key)
-                os << std::setw(10) << key << " -> " << std::setw(24) << scancode << " -> " << key2 << '\n';
+                os << std::setw(15) << key << " -> " << std::setw(24) << scancode << " -> " << key2 << '\n';
     os << '\n';
 
     os << "\tScancodes for which localize(scancode) == Unknown\n\n";
@@ -138,7 +138,7 @@ void printLocalizeAndDelocalizeOddities(std::ostream& os)
     for (auto scancode : scancodes)
         if (auto key = sf::Keyboard::localize(scancode); key != sf::Keyboard::Key::Unknown)
             if (auto scancode2 = sf::Keyboard::delocalize(key); scancode2 == sf::Keyboard::Scan::Unknown)
-                os << std::setw(24) << scancode << " -> " << std::setw(10) << key << " -> " << scancode2 << '\n';
+                os << std::setw(24) << scancode << " -> " << std::setw(15) << key << " -> " << scancode2 << '\n';
     os << '\n';
 
     os << "\tOther scancodes for which delocalize(localize(scancode)) != scancode\n\n";
@@ -146,7 +146,7 @@ void printLocalizeAndDelocalizeOddities(std::ostream& os)
         if (auto key = sf::Keyboard::localize(scancode); key != sf::Keyboard::Key::Unknown)
             if (auto scancode2 = sf::Keyboard::delocalize(key);
                 scancode2 != sf::Keyboard::Scan::Unknown && scancode2 != scancode)
-                os << std::setw(24) << scancode << " -> " << std::setw(10) << key << " -> " << scancode2 << '\n';
+                os << std::setw(24) << scancode << " -> " << std::setw(15) << key << " -> " << scancode2 << '\n';
     os << '\n';
 }
 
@@ -172,11 +172,11 @@ void printLocalizeAndDelocalizeDiagram(std::ostream& os)
             auto key2 = sf::Keyboard::localize(scancode);
             if (inDegreeScancode[static_cast<int>(scancode)] != 1 || inDegreeKey[static_cast<std::size_t>(key)] != 1 ||
                 key != key2)
-                os << key << " -> \"" << scancode << "\"\n";
+                os << '"' << key << "\" -> \"" << scancode << "\"\n";
         }
         else
         {
-            os << key << " {rank=min " << key << "}\n";
+            os << '"' << key << "\" {rank=min \"" << key << "\"}\n";
         }
 
     for (auto scancode : scancodes)
@@ -185,7 +185,7 @@ void printLocalizeAndDelocalizeDiagram(std::ostream& os)
             auto scancode2 = sf::Keyboard::delocalize(key);
             if (inDegreeKey[static_cast<std::size_t>(key)] != 1 || inDegreeScancode[static_cast<int>(scancode)] != 1 ||
                 scancode != scancode2)
-                os << key << " -> \"" << scancode << "\" [dir=back]\n";
+                os << '"' << key << "\" -> \"" << scancode << "\" [dir=back]\n";
         }
         else
         {

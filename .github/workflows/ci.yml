@@ -1,49 +1,62 @@
 name: CI
 
-on: [push, pull_request]
+on: [push, pull_request, workflow_dispatch]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash
 
 jobs:
   build:
-    name: ${{ matrix.platform.name }} ${{ matrix.config.name }}
+    name: ${{ matrix.platform.name }}
     runs-on: ${{ matrix.platform.os }}
 
     strategy:
       fail-fast: false
       matrix:
         platform:
-        - { name: Windows VS2019, os: windows-2019,  flags: -DBUILD_SHARED_LIBS=OFF -DSFML_USE_STATIC_STD_LIBS=ON }
-        - { name: Windows VS2022, os: windows-2022,  flags: -DBUILD_SHARED_LIBS=OFF -DSFML_USE_STATIC_STD_LIBS=ON }
-        - { name: Linux GCC,      os: ubuntu-latest, flags: -DBUILD_SHARED_LIBS=ON }
-        - { name: Linux Clang,    os: ubuntu-latest, flags: -DBUILD_SHARED_LIBS=ON -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ }
-        - { name: MacOS XCode,    os: macos-latest,  flags: -DBUILD_SHARED_LIBS=ON }
+        - { name: Windows VS2026, os: windows-2025, flags: -DBUILD_SHARED_LIBS=OFF -DSFML_USE_STATIC_STD_LIBS=ON }
+        - { name: Linux GCC,      os: ubuntu-26.04, flags: -DBUILD_SHARED_LIBS=ON }
+        - { name: Linux Clang,    os: ubuntu-26.04, flags: -DBUILD_SHARED_LIBS=ON -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ }
+        - { name: macOS Xcode,    os: macos-26,     flags: -DBUILD_SHARED_LIBS=ON }
 
     steps:
     - name: Install Linux Dependencies
       if: runner.os == 'Linux'
-      run: sudo apt-get update && sudo apt-get install libxrandr-dev libxcursor-dev libxi-dev libudev-dev libflac-dev libvorbis-dev libgl1-mesa-dev libegl1-mesa-dev
+      run: sudo apt-get update && sudo apt-get install libx11-dev libxrandr-dev libxcursor-dev libxi-dev libudev-dev libflac-dev libvorbis-dev libfreetype-dev libharfbuzz-dev libgl1-mesa-dev libegl1-mesa-dev libmbedtls-dev libssh2-1-dev
 
     - name: SFML-Input - Checkout Code
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
+      with:
+        persist-credentials: false
 
     - name: SFML - Checkout Code
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
       with:
         repository: SFML/SFML
         ref: master
         path: SFML
+        persist-credentials: false
 
     - name: SFML - Configure CMake
-      shell: bash
-      run: cmake -S $GITHUB_WORKSPACE/SFML -B $GITHUB_WORKSPACE/SFML/build -DCMAKE_INSTALL_PREFIX=$GITHUB_WORKSPACE/SFML/install -DCMAKE_VERBOSE_MAKEFILE=ON ${{matrix.platform.flags}}
+      env:
+        CMAKE_FLAGS: ${{ matrix.platform.flags }}
+      run: cmake -S "$GITHUB_WORKSPACE/SFML" -B "$GITHUB_WORKSPACE/SFML/build" -DCMAKE_INSTALL_PREFIX="$GITHUB_WORKSPACE/SFML/install" -DCMAKE_VERBOSE_MAKEFILE=ON $CMAKE_FLAGS
 
     - name: SFML - Build
-      shell: bash
-      run: cmake --build $GITHUB_WORKSPACE/SFML/build --config Release --target install
+      run: cmake --build "$GITHUB_WORKSPACE/SFML/build" --config Release --target install
 
     - name: SFML-Input - Configure CMake
-      shell: bash
-      run: cmake -S $GITHUB_WORKSPACE -B $GITHUB_WORKSPACE/build -DCMAKE_INSTALL_PREFIX=$GITHUB_WORKSPACE/install -DCMAKE_VERBOSE_MAKEFILE=ON -DSFML_ROOT=$GITHUB_WORKSPACE/SFML/install ${{matrix.platform.flags}}
+      env:
+        CMAKE_FLAGS: ${{ matrix.platform.flags }}
+      run: cmake -S "$GITHUB_WORKSPACE" -B "$GITHUB_WORKSPACE/build" -DCMAKE_INSTALL_PREFIX="$GITHUB_WORKSPACE/install" -DCMAKE_VERBOSE_MAKEFILE=ON -DSFML_ROOT="$GITHUB_WORKSPACE/SFML/install" $CMAKE_FLAGS
 
     - name: SFML-Input - Build
-      shell: bash
-      run: cmake --build $GITHUB_WORKSPACE/build --config Release --target install
+      run: cmake --build "$GITHUB_WORKSPACE/build" --config Release --target install
